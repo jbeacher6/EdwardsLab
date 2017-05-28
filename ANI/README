@@ -2,7 +2,7 @@ This is a Python library to calculate average nucleotide identities using a rang
 
 The different methods are blastn(BLAST) and nucmer(MUMmer). 
 Currently, nucmer algorithm is assumed to be working(tests to verify correctness will take place) 
-The blastn ANI algorithm is not.
+The blastn ANI algorithm is currently not working correctly
 
 ------------------------------
 Operating System Requirements
