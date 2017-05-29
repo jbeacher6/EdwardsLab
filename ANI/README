@@ -12,15 +12,26 @@ Linux or OS X Operating System
 --------------------------------
 Installed Software Requirements
 --------------------------------
-Python 2.7 or greater
-BLAST (http://www.ncbi.nlm.nih.gov/news/1-7-2014-blast-2-2-29/)
-ftp://ftp.ncbi.nih.gov/blast/executables/LATEST/
-ftp://ftp.ncbi.nih.gov/blast/executables/LATEST/ncbi-blast-2.6.0+.dmg
-Check md5: 19397736eafbb9e42d6541dc2797523a  ncbi-blast-2.6.0+.dmg
-Right click and open ncbi-blast-2.6.0+.dmg
+
+Python version 2.7 or greater
+-----------------------
+Installed by default on OS X
+https://www.python.org/downloads/
+
+BLAST version 2.2.29 or higher
+--------------------------------
+Directions:
+1. Download ftp://ftp.ncbi.nih.gov/blast/executables/LATEST/ncbi-blast-2.6.0+.dmg
+  a. ftp://ftp.ncbi.nih.gov/blast/executables/LATEST/
+  b. http://www.ncbi.nlm.nih.gov/news/1-7-2014-blast-2-2-29/
+2. Check md5: 19397736eafbb9e42d6541dc2797523a  ncbi-blast-2.6.0+.dmg
+3. Right click and open ncbi-blast-2.6.0+.dmg
   a. If one double clicks the left mousepad twice to open, it will probably not install because of default permissions
 
-MUMmer (http://sourceforge.net/projects/mummer/files/mummer/3.23/MUMmer3.23.tar.gz/stats/timeline)
+MUMmer version 3.23 or higher
+------------------------------
+Directions:
+1. Download MUMmer (http://sourceforge.net/projects/mummer/files/mummer/3.23/MUMmer3.23.tar.gz/stats/timeline)
 https://sourceforge.net/projects/mummer/files/mummer/
 Check md5: ?
 
@@ -28,7 +39,6 @@ cd "MUMmer3.x"
 "tar -xvzf MUMmer3.x"
 "make check"
 "make install"
-
 
 ------------------
 File Requirements
