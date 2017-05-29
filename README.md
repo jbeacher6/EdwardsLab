@@ -53,7 +53,7 @@ https://sourceforge.net/projects/mummer/files/mummer/
 2. Check md5: ?
 
 In terminal:
-3. "cd MUMmer3.x" 
+3. "cd MUMmer3.x"
 4. "tar -xvzf MUMmer3.x"
 5. "make check"
 6. "make install"
