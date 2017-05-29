@@ -177,11 +177,9 @@ class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName(): , class CdF
 '''
 class AllDeltaFilesMummer():
   def run(self):
-    '''
-    mummerBaseDirectory = '/Users/jon6/MUMmer3.23/'
-    directoryFNAfiles = '/Users/jon6/MUMmer3.23/allfnafiles/'
-    saveDeltaFileNamesDirectory = '/Users/jon6/MUMmer3.23/allDeltaFiles/'
-    '''
+    directoryFNAfiles = TkANI.allFnaDirectoryLocationString
+    mummerBaseDirectory = TkANI.mummerDirectoryLocationString
+    saveDeltaFileNamesDirectory = TkANI.deltaFilesDirectoryLocationString
     vs = '__vs__'
     ext = ".fna"
     listOfFiles = []
@@ -281,6 +279,10 @@ class AllOutFilesBlast():
     directoryFNAfiles = '/Users/jon6/ncbi-blast-2.2.29+/'
     saveOutFileNamesDirectory = '/Users/jon6/ncbi-blast-2.2.29+/outFiles/'
     '''
+    directoryFNAfiles = TkANI.allFnaDirectoryLocationString
+    blastBaseDirectory = TkANI.blastDirectoryLocationString
+    saveOutFileNamesDirectory = TkANI.saveOutFileNamesDirectory
+    
     ext = ".fna"
     vs = '__vs__'
     listOfFiles = []
@@ -376,6 +378,7 @@ class TkANI(Tkinter.Frame):
   # Directory Location Vars
   allFnaDirectoryLocationString = ""
   blastDirectoryLocationString = ""
+  outFilesDirectoryLocationString = ""
   mummerDirectoryLocationString = ""
   deltaFilesDirectoryLocationString = ""
   percentDirectoryLocationString = ""
@@ -385,6 +388,12 @@ class TkANI(Tkinter.Frame):
     self.concatinatingFNAFiles = ConcatinatingFNAFiles()
     self.changeFilesToDirectoryName = ChangeFilesToDirectoryName()
     self.copyFilesInstance = CopyFiles()
+    self.allOutFilesBlast = AllOutFilesBlast()
+    self.blastANI = BlastANI()
+
+    self.allDeltaFilesMummer = AllDeltaFilesMummer()
+    self.mummerANI = MUMmerANI()
+
   	# GUI inits
     Tkinter.Frame.__init__(self, root)
     self.configure(background='black')
@@ -406,11 +415,16 @@ class TkANI(Tkinter.Frame):
      # Defining query directory buttons
     Tkinter.Button(self, text='Location Of all.fna Directory', command=self.askAllFnaDirectory, width=buttonWidth).grid(row=1, column=1, pady=(yPaddingAmount, yPaddingAmount))
     Tkinter.Button(self, text='BLAST Directory Containing Directories Of .fna Files', command=self.askBlastDirectory, width=buttonWidth).grid(row=2, column=1, pady=(yPaddingAmount, yPaddingAmount))
-    Tkinter.Button(self, text='MUMmer Directory Location Containing Directories Of .fna Files', command=self.askMummerDirectory, width=buttonWidth).grid(row=3, column=1, pady=(yPaddingAmount, yPaddingAmount)) 
-    Tkinter.Button(self, text='Delta Files Output Directory', command=self.askDeltaFilesOutputDirectory, width=buttonWidth).grid(row=4, column=1, pady=(yPaddingAmount, yPaddingAmount))
-    Tkinter.Button(self, text='Percent ANI Output Results Directory', command=self.askPercentANIOutputDirectory, width=buttonWidth).grid(row=5, column=1, pady=(yPaddingAmount, yPaddingAmount))
+
+    Tkinter.Button(self, text='Out Files (from BLAST Output) Output Directory', command=self.askOutFilesOutputDirectory, width=buttonWidth).grid(row=4, column=1, pady=(yPaddingAmount, yPaddingAmount))
+    Tkinter.Button(self, text='MUMmer Directory Location Containing Directories Of .fna Files', command=self.askMummerDirectory, width=buttonWidth).grid(row=3, column=1, pady=(yPaddingAmount, yPaddingAmount))
+
+    Tkinter.Button(self, text='Delta Files (from MUMmer Output) Output Directory', command=self.askDeltaFilesOutputDirectory, width=buttonWidth).grid(row=5, column=1, pady=(yPaddingAmount, yPaddingAmount))
+    Tkinter.Button(self, text='Percent ANI Output Results Directory', command=self.askPercentANIOutputDirectory, width=buttonWidth).grid(row=6, column=1, pady=(yPaddingAmount, yPaddingAmount))
+
+
      # Define run button
-    Tkinter.Button(self, text='Run', command=self.run, width=runButtonWidth).grid(row=6, column=1, columnspan=2, pady=(yPaddingAmount, yPaddingAmount))
+    Tkinter.Button(self, text='Run', command=self.run, width=runButtonWidth).grid(row=7, column=1, columnspan=2, pady=(yPaddingAmount, yPaddingAmount))
      # Define directory text entries
     self.allFnaEntry = Tkinter.Entry(self, bg=entryHexColor, fg="white", width=entryWidth)
     self.allFnaEntry.grid(row=1, column=2, padx=(xPaddingAmount, xPaddingAmount))
@@ -418,14 +432,17 @@ class TkANI(Tkinter.Frame):
     self.blastEntry = Tkinter.Entry(self, bg=entryHexColor, fg="white", width=entryWidth)
     self.blastEntry.grid(row=2, column=2, padx=(xPaddingAmount, xPaddingAmount))
      # Code golf requires two lines here because widget will return none if completed in one line
+    self.outEntry = Tkinter.Entry(self, bg=entryHexColor, fg="white",  width=entryWidth)
+    self.outEntry.grid(row=4, column=2, padx=(xPaddingAmount, xPaddingAmount))
+    # Under Par
     self.mummerEntry = Tkinter.Entry(self, bg=entryHexColor, fg="white", width=entryWidth)
     self.mummerEntry.grid(row=3, column=2, padx=(xPaddingAmount, xPaddingAmount))
-     #  Under Par
+     # More boiler plate under par entries
     self.deltaEntry = Tkinter.Entry(self, bg=entryHexColor, fg="white", width=entryWidth)
-    self.deltaEntry.grid(row=4, column=2, padx=(xPaddingAmount, xPaddingAmount))
+    self.deltaEntry.grid(row=5, column=2, padx=(xPaddingAmount, xPaddingAmount))
      # Masters Tournament
     self.percentEntry = Tkinter.Entry(self, bg=entryHexColor, fg="white", width=entryWidth)
-    self.percentEntry.grid(row=5, column=2, padx=(xPaddingAmount, xPaddingAmount))
+    self.percentEntry.grid(row=6, column=2, padx=(xPaddingAmount, xPaddingAmount))
     '''
     Define checkboxes
     1 is an enabled checkbox, 0 is an enabled checkbox
@@ -443,50 +460,55 @@ class TkANI(Tkinter.Frame):
     self.jsonCheckbox = Tkinter.Checkbutton(self, variable=self.jsonCheckboxValue, onvalue=1, offvalue=0, text ='Create output for JSON', width=checkBoxWidth)
     self.jsonCheckbox.grid(row=6, column=3)
     # Set checkbox default values
-    self.completeCheckboxValue.set(1)
+    self.completeCheckboxValue.set(0)
     self.blastCheckboxValue.set(0)
-    self.mummerCheckboxValue.set(0)
+    self.mummerCheckboxValue.set(1)
     self.sqlLiteCheckboxValue.set(0)
     self.jsonCheckboxValue.set(0)
     # Remove for generic program
     self.allFnaEntry.insert(0, str("/Users/jon/Desktop/test"))
     self.blastEntry.insert(0, str("/Users/jon/Desktop/testb"))
-    self.mummerEntry.insert(0, str("/Users/jon/Desktop/testm"))
-    '''
-    self.blastEntry.insert(0, str("/Users/jon/Desktop/all.fna"))
-    self.mummerEntry.insert(0, str("/Users/jon/Desktop/all.fna"))
-    self.deltaEntry.insert(0, str("/Users/jon/Desktop/all.fna"))
-    self.percentEntry.insert(0, str("/Users/jon/Desktop/all.fna"))
-    '''
-   # Returns directory containing files respective to BLAST
+    self.outEntry.insert(0, str("/Users/jon/Desktop/blastOut"))
+    self.mummerEntry.insert(0, str("/Users/jon/MUMmer3.23/"))
+    self.deltaEntry.insert(0, str("/Users/jon/MUMmer3.23/allDeltaFiles/"))
+    self.percentEntry.insert(0, str("/Users/jon/Desktop/percentANIResultsDirectory"))
+    
+   # Queries directory containing files respective to BLAST
   def askAllFnaDirectory(self):
      askAllFnaDirectoryLocation = tkFileDialog.askdirectory()
      if askAllFnaDirectoryLocation:
         self.allFnaEntry.delete(0, 'end')
         self.allFnaEntry.insert(0, str(askAllFnaDirectoryLocation))
      return
-   # Returns directory containing files respective to BLAST
+   # Queries directory containing files respective to BLAST
   def askBlastDirectory(self):
      blastDirectoryLocation = tkFileDialog.askdirectory()
      if blastDirectoryLocation:
         self.blastEntry.delete(0, 'end')
         self.blastEntry.insert(0, str(blastDirectoryLocation))
      return
-   # Returns directory containing files respective to MUMmer
+   # Queries directory containing files respective to MUMmer
+       # Returns directory containing files to dump Delta files
+  def askOutFilesOutputDirectory(self):
+     outFilesDirectoryLocation = tkFileDialog.askdirectory()
+     if outFilesDirectoryLocation:
+        self.outEntry.delete(0, 'end')
+        self.outEntry.insert(0, str(outFilesDirectoryLocation))
+     return
   def askMummerDirectory(self):
      mummerDirectoryLocation = tkFileDialog.askdirectory()
      if mummerDirectoryLocation:
         self.mummerEntry.delete(0, 'end')
         self.mummerEntry.insert(0, str(mummerDirectoryLocation))
      return
- 	 # Returns directory containing files to dump Delta files
+ 	 # Queries directory containing files to dump Delta files
   def askDeltaFilesOutputDirectory(self):
      deltaFilesDirectoryLocation = tkFileDialog.askdirectory()
      if deltaFilesDirectoryLocation:
         self.deltaEntry.delete(0, 'end')
         self.deltaEntry.insert(0, str(deltaFilesDirectoryLocation))
      return
-   # Returns directory containing files to dump output files
+   #  Queries directory containing files to dump output files
   def askPercentANIOutputDirectory(self):
      percentANIDirectoryLocation = tkFileDialog.askdirectory()
      if percentANIDirectoryLocation:
@@ -504,9 +526,13 @@ class TkANI(Tkinter.Frame):
   def saveTkValues(self):
    TkANI.allFnaDirectoryLocationString = self.allFnaEntry.get()
    TkANI.blastDirectoryLocationString = self.blastEntry.get()
+   TkANI.outFilesDirectoryLocationString = self.outEntry.get()
    TkANI.mummerDirectoryLocationString = self.mummerEntry.get()
    TkANI.deltaFilesDirectoryLocationString = self.deltaEntry.get()
    TkANI.percentDirectoryLocationString = self.percentEntry.get()
+  '''
+  Main Buddy
+  '''
    # Main from the GUI
   def run(self):
     print("Program started running at time: " + str(datetime.now()))
@@ -517,10 +543,19 @@ class TkANI(Tkinter.Frame):
     if self.cdAllCheckboxValue.get() == 1:
       self.copyFilesInstance.run(TkANI.blastDirectoryLocationString)
       self.copyFilesInstance.run(TkANI.mummerDirectoryLocationString)
-    if self.mummerCheckboxValue.get() == 1:
-      print("m1")
     if self.blastCheckboxValue.get() == 1:
       print("b1")
+      # datbase setup for blast?
+      self.allOutFilesBlast.run()
+      '''
+      self.blastANI.calculateANI()
+      '''
+    if self.mummerCheckboxValue.get() == 1:
+      print("m1")
+      self.allDeltaFilesMummer.run()
+      '''
+      self.mummerANI.run()
+      '''
     if self.sqlLiteCheckboxValue.get() == 1:
       print("s1")
     if self.jsonCheckboxValue.get() == 1:
