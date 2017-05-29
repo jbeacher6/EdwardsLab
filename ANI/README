@@ -47,18 +47,17 @@ In terminal:
 ------------------
 File Requirements
 ------------------
-ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/all.fna.tar.gz
-
 Directions:
-1. Unzip all.fna
-2. In terminal:
+1. Download ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/all.fna.tar.gz 
+2. Unzip all.fna
+3. In terminal:
 	(Tested)
 	a.Change directory to aniGUI.py
 	b.Inputpython aniGUI.py
 or
 	(Not Tested)
 	a. Double click on aniGUI.py
-3. A GUI should open
+4. A GUI should open
 
 
 ----------------
