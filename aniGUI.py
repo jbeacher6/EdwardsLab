@@ -531,7 +531,7 @@ class TkANI(Tkinter.Frame):
    TkANI.deltaFilesDirectoryLocationString = self.deltaEntry.get()
    TkANI.percentDirectoryLocationString = self.percentEntry.get()
   '''
-  Main Buddy
+  Main 
   '''
    # Main from the GUI
   def run(self):
