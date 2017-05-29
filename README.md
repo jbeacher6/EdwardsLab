@@ -143,11 +143,18 @@ Current Bugs or Known Issues
    b. If there are any children to the specified parent, unknown behavior will happen as it has not been tested yet.
 3. User must select all.fna in the first Red Box or the reformat, rename and concatenate program will not work correctly 
 
-Authors:
-        Jon Beacher
-	Gina Benavides
-	Rob Edwards
 
+---------
+Authors
+----------
+Jon Beacher
+Gina Benavides
+Rob Edwards
+
+
+--------
+License 
+--------
 The MIT License (MIT)
 
 Copyright (c) 2014 Rob Edwards
