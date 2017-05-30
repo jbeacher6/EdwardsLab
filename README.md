@@ -63,6 +63,7 @@ Directions:
   a. ftp://ftp.ncbi.nih.gov/blast/executables/LATEST/
   
   b. http://www.ncbi.nlm.nih.gov/news/1-7-2014-blast-2-2-29/
+  
 2. Check md5: 19397736eafbb9e42d6541dc2797523a  ncbi-blast-2.6.0+.dmg
 
 3. Right click and open ncbi-blast-2.6.0+.dmg
