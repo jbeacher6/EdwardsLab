@@ -194,6 +194,8 @@ class AllDeltaFilesMummer():
     n =  len(listOfFilesNoRepeats)
     print (n)
     os.chdir(mummerBaseDirectory)
+    if not os.path.exists(saveDeltaFileNamesDirectory):
+      os.mkdir(saveDeltaFileNamesDirectory, 0777)
     for i in range(0,n):
       for j in range(i,n):
         if(listOfFilesNoRepeats[i] is not listOfFilesNoRepeats[j]):
@@ -212,17 +214,17 @@ This class is intended and has only been tested after running classes:
 class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName(): , class CdFiles(): and class AllDeltaFilesMummer():
 '''
 class MUMmerANI():
-  def process_data(path):
+  def process_data(self, path):
     with open(path) as input_file:
       for line in input_file:
         chunk = line.strip().split(' ')
         if len(chunk) == 7:
           yield chunk
-  def calculateANI(path):
+  def calculateANI(self, path):
     x=0
     list1 = []
     oneHundredANI = False
-    for piece in process_data(path):
+    for piece in self.process_data(path):
       if piece[0] == piece[2]:
         if piece[4] and piece[5] == '0':
           oneHundredANI = True
@@ -232,7 +234,7 @@ class MUMmerANI():
           x += 1
           break
     if not oneHundredANI:
-      for piece in process_data(path):
+      for piece in self.process_data(path):
         length = abs(((int(piece[1])-int(piece[0]))) + abs((int(piece[3])-int(piece[2])))) / 2
         ANI = ((length - int(piece[5])) / length) * 100
         list1.insert(x, ANI)
@@ -243,10 +245,8 @@ class MUMmerANI():
       return ((sum(list1)/ x))
   def run(self):
     vs = '__vs__'
-    '''
-    mummerBaseDirectory = '/Users/jon6/MUMmer3.23/'
-    deltaFilesNamesDirectory = '/Users/jon6/MUMmer3.23/allDeltaFiles/'
-    '''
+    mummerBaseDirectory = TkANI.mummerDirectoryLocationString
+    deltaFilesNamesDirectory = TkANI.deltaFilesDirectoryLocationString
     ext = ".delta"
     listOfFiles = []
     for root, subdir, files in os.walk(deltaFilesNamesDirectory, topdown=True):
@@ -260,7 +260,7 @@ class MUMmerANI():
     print listOfFilesNoRepeats
     compareString = "%ANI is low"
     for i in range(0,n):
-      s = calculateANI(listOfFilesNoRepeats[i])
+      s = self.calculateANI(listOfFilesNoRepeats[i])
       if s:
         if s != compareString:
           print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " +str(s) + "%")
@@ -319,16 +319,16 @@ class BlastANI():
   '''
   path = '/Users/jon6/Desktop/blast_stuff/ecoli_salmonella.out'
   '''
-  def process_data(path):
+  def process_data(self, path):
     with open(path) as input_file:
       for line in input_file:
         chunk = line.strip().split()
         yield chunk 
-  def calculateANI(path):
+  def calculateANI(self, path):
     x = 0
     total = 0
     oneHundredPercentANI = False
-    for piece in process_data(path):
+    for piece in self.process_data(path):
       if piece[2] == '100.00' and piece[6] == '1':
         oneHundredPercentANI = True
         percent_identity = float(piece[2])
@@ -339,7 +339,7 @@ class BlastANI():
         x += 1
         break
     if not oneHundredPercentANI:
-      for piece in process_data(path):
+      for piece in self.process_data(path):
         percent_identity = float(piece[2])
         decimal_percent_identity = (percent_identity/100)
         align = decimal_percent_identity*int(piece[3])
@@ -388,6 +388,7 @@ class TkANI(Tkinter.Frame):
     self.concatinatingFNAFiles = ConcatinatingFNAFiles()
     self.changeFilesToDirectoryName = ChangeFilesToDirectoryName()
     self.copyFilesInstance = CopyFiles()
+
     self.allOutFilesBlast = AllOutFilesBlast()
     self.blastANI = BlastANI()
 
@@ -409,7 +410,9 @@ class TkANI(Tkinter.Frame):
     self.completeCheckboxValue = IntVar()
     self.cdAllCheckboxValue = IntVar()
     self.mummerCheckboxValue = IntVar()
+    self.mummerANICheckboxValue = IntVar()
     self.blastCheckboxValue = IntVar()
+    self.blastANICheckboxValue = IntVar()
     self.sqlLiteCheckboxValue = IntVar()
     self.jsonCheckboxValue = IntVar()
      # Defining query directory buttons
@@ -421,7 +424,6 @@ class TkANI(Tkinter.Frame):
 
     Tkinter.Button(self, text='Delta Files (from MUMmer Output) Output Directory', command=self.askDeltaFilesOutputDirectory, width=buttonWidth).grid(row=5, column=1, pady=(yPaddingAmount, yPaddingAmount))
     Tkinter.Button(self, text='Percent ANI Output Results Directory', command=self.askPercentANIOutputDirectory, width=buttonWidth).grid(row=6, column=1, pady=(yPaddingAmount, yPaddingAmount))
-
 
      # Define run button
     Tkinter.Button(self, text='Run', command=self.run, width=runButtonWidth).grid(row=7, column=1, columnspan=2, pady=(yPaddingAmount, yPaddingAmount))
@@ -453,20 +455,27 @@ class TkANI(Tkinter.Frame):
     self.cdAllCheckbox.grid(row=2, column=3)
     self.blastCheckox = Tkinter.Checkbutton(self, variable=self.blastCheckboxValue, onvalue=1, offvalue=0, text ='Execute Blast', width=checkBoxWidth)
     self.blastCheckox.grid(row=3, column=3)
+    self.blastANICheckbox = Tkinter.Checkbutton(self, variable=self.blastANICheckboxValue, onvalue=1, offvalue=0, text ='Execute Blast ANI', width=checkBoxWidth)
+    self.blastANICheckbox.grid(row=4,column=3)
     self.mummerCheckbox = Tkinter.Checkbutton(self, variable=self.mummerCheckboxValue, onvalue=1, offvalue=0, text ='Execute MUMmer', width=checkBoxWidth)
-    self.mummerCheckbox.grid(row=4, column=3)
+    self.mummerCheckbox.grid(row=5, column=3)
+    self.mummerANICheckbox = Tkinter.Checkbutton(self, variable=self.mummerANICheckboxValue, onvalue=1, offvalue=0, text ='Execute MUMmer ANI', width=checkBoxWidth)
+    self.mummerANICheckbox.grid(row=6, column=3)  
     self.sqlLiteCheckbox = Tkinter.Checkbutton(self, variable=self.sqlLiteCheckboxValue, onvalue=1, offvalue=0, text ='Create output for SQLite', width=checkBoxWidth)
-    self.sqlLiteCheckbox.grid(row=5, column=3)
+    self.sqlLiteCheckbox.grid(row=7, column=3)
     self.jsonCheckbox = Tkinter.Checkbutton(self, variable=self.jsonCheckboxValue, onvalue=1, offvalue=0, text ='Create output for JSON', width=checkBoxWidth)
-    self.jsonCheckbox.grid(row=6, column=3)
+    self.jsonCheckbox.grid(row=8, column=3)
+
     # Set checkbox default values
     self.completeCheckboxValue.set(0)
     self.blastCheckboxValue.set(0)
-    self.mummerCheckboxValue.set(1)
+    self.blastANICheckboxValue.set(0)
+    self.mummerCheckboxValue.set(0)
+    self.mummerANICheckboxValue.set(1)
     self.sqlLiteCheckboxValue.set(0)
     self.jsonCheckboxValue.set(0)
     # Remove for generic program
-    self.allFnaEntry.insert(0, str("/Users/jon/Desktop/test"))
+    self.allFnaEntry.insert(0, str("/Users/jon/Desktop/allfnabackup3/all.fna"))
     self.blastEntry.insert(0, str("/Users/jon/Desktop/testb"))
     self.outEntry.insert(0, str("/Users/jon/Desktop/blastOut"))
     self.mummerEntry.insert(0, str("/Users/jon/MUMmer3.23/"))
@@ -531,7 +540,7 @@ class TkANI(Tkinter.Frame):
    TkANI.deltaFilesDirectoryLocationString = self.deltaEntry.get()
    TkANI.percentDirectoryLocationString = self.percentEntry.get()
   '''
-  Main 
+  Main Buddy
   '''
    # Main from the GUI
   def run(self):
@@ -543,6 +552,7 @@ class TkANI(Tkinter.Frame):
     if self.cdAllCheckboxValue.get() == 1:
       self.copyFilesInstance.run(TkANI.blastDirectoryLocationString)
       self.copyFilesInstance.run(TkANI.mummerDirectoryLocationString)
+
     if self.blastCheckboxValue.get() == 1:
       print("b1")
       # datbase setup for blast?
@@ -556,18 +566,21 @@ class TkANI(Tkinter.Frame):
       '''
       self.mummerANI.run()
       '''
+    if self.blastANICheckboxValue.get() == 1:
+      self.blastANI.run()
+
+    if self.mummerANICheckboxValue.get() == 1:
+      self.mummerANI.run()
+      
     if self.sqlLiteCheckboxValue.get() == 1:
       print("s1")
+
     if self.jsonCheckboxValue.get() == 1:
       print("j1")
-    print("Program completed at time: " + str(datetime.now()))
+      print("Program completed at time: " + str(datetime.now()))
 
 if __name__=='__main__':
    root = Tkinter.Tk()
    root.title("SDSU Blast and MUMMer Average Nucleotide Algorithms GUI v1.0")
    TkANI(root).pack()
    root.mainloop()
-
-   
-
-
