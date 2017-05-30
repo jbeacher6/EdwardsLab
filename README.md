@@ -168,7 +168,9 @@ Test case documenation will be available at a further date
 Current Bugs or Known Issues
 ----------------------------
 1. Directories with spaces do not work correctly
-   a. For example, /Users/jon/Desktop/all fna will not work correctly, but /Users/jon/Desktop/all.fna will
+
+   a. For example, /Users/jon/Desktop/all fna will not work correctly, but /Users/jon/Desktop/all.fna will work
+   
 2. If the user has checked Move modified files to Blast/MUMmer Directories, the directory should not already exist. 
    a. If the directory without children exists, the program will delete it. 
    b. If there are any children to the specified parent, unknown behavior will happen as it has not been tested yet.
