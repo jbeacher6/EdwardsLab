@@ -184,7 +184,9 @@ Current Bugs or Known Issues
 Authors
 ----------
 Jon Beacher
+
 Gina Benavides
+
 Rob Edwards
 
 
