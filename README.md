@@ -75,6 +75,7 @@ https://sourceforge.net/projects/mummer/files/mummer/
 
 In terminal:
 3. "cd Users/YourUsername/"
+
 4. "mkdir MUMmer3.x"
 5. "cd MUMmer3.x"
 6. "open Users/YourUsername/MUMmer3.x"
