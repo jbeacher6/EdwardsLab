@@ -25,6 +25,13 @@ Operating System Requirements
 Linux or OS X Operating System
 (Tested on OS X)
 
+MUMmer3.10 has been tested successfully on:
+
+- Redhat Linux 6.2, 7.3   (Pentium 4)
+- Compaq Tru64 UNIX 5.1   (alpha)
+- SunOS UNIX 5.8          (sparc)
+- Mac OS X 10.2.8         (PowerPC G4)
+
 
 --------------------------------
 Installed Software Requirements
@@ -34,6 +41,22 @@ Python version 2.7 or greater
 ------------------------------
 Installed by default on OS X
 https://www.python.org/downloads/
+
+   The MUMmer3.x package requires the following to run successfully. In the
+absence of one or more of these utilities, certain MUMmer programs may fail
+to run correctly. Listed in parenthesis are the versions used to test the
+MUMmer package. These versions, or subsequent versions should assure the proper
+execution of the various MUMmer programs. These utilities must be accessible
+via the system path:
+
+- make (GNU make 3.79.1)
+- perl (PERL     5.6.0)
+- sh   (GNU sh   1.14.7)
+- csh  (tcsh     6.10.00)
+- g++  (GNU gcc  2.95.3)
+- sed  (GNU sed  3.02)
+- awk  (GNU awk  3.0.4)
+- ar   (GNU ar   2.9.5)
 
 BLAST version 2.2.29 or higher
 --------------------------------
