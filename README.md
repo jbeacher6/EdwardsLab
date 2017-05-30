@@ -37,10 +37,7 @@ MUMmer3.10 has been tested successfully on:
 Installed Software Requirements
 --------------------------------
 
-Python version 2.7 or greater
-------------------------------
-Installed by default on OS X
-https://www.python.org/downloads/
+- Python version 2.7 or greater
 
    The MUMmer3.x package requires the following to run successfully. In the
 absence of one or more of these utilities, certain MUMmer programs may fail
