@@ -80,7 +80,7 @@ In terminal:
 5. "cd MUMmer3.x"
 6. "open Users/YourUsername/MUMmer3.x"
 7. "tar -xvzf MUMmer3.x"
-8. "su" (or append sudo to the beginning of 8 and 9)
+8. "su" (or append sudo to the beginning of 8 and 9) [tested with "su"]
 9. "make check"
 10. "make install"
 11. MUMmer 3.x should now be installed properly
