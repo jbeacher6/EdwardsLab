@@ -64,6 +64,7 @@ Directions:
 2. Check md5: 19397736eafbb9e42d6541dc2797523a  ncbi-blast-2.6.0+.dmg
 3. Right click and open ncbi-blast-2.6.0+.dmg
   a. If one double clicks the left mousepad twice to open, it will probably not install because of default permissions
+4.
 
 MUMmer version 3.23 or higher
 ------------------------------
@@ -73,11 +74,16 @@ https://sourceforge.net/projects/mummer/files/mummer/
 2. Check md5: ?
 
 In terminal:
-3. "cd MUMmer3.x"
-4. "tar -xvzf MUMmer3.x"
-5. "make check"
-6. "make install"
-
+3. "cd Users/YourUsername/"
+4. "mkdir MUMmer3.x"
+5. "cd MUMmer3.x"
+6. "open Users/YourUsername/MUMmer3.x"
+7. "tar -xvzf MUMmer3.x"
+8. "su" (or append sudo to the beginning of 8 and 9)
+9. "make check"
+10. "make install"
+11. MUMmer 3.x should now be installed properly
+  a. Try entering ./nucmer to test if installation worked. If a reply of "not found" shows, it was probably not installed correctly 
 
 ------------------
 File Requirements
