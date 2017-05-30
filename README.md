@@ -108,7 +108,6 @@ or
 ----------------
 GUI Directions
 ----------------
-This will open a GUI to run the program. 
 
 Left Buttons
 ------------
