@@ -155,7 +155,7 @@ A string output is thrown if this bug is reproduced so the program doesn't crash
 class CopyFiles():
   def run(self, moveFilesToDirectoryParam):
     if(moveFilesToDirectoryParam == ""):
-      print(str("Error: a directory entry is nil"))
+      print(str("Error: Cannot copy, one of the directory entry is nil"))
       return
     directory = TkANI.allFnaDirectoryLocationString
     # moveToDirectory = TkANI.blastDirectoryLocationString
@@ -168,7 +168,7 @@ class CopyFiles():
     else:
       print("Copying files to " + str(moveFilesToDirectoryParam))
       shutil.copytree(directory, moveToDirectory)
-    print("Copying Blast files completed")
+    print("Copying Blast files completed!")
 '''
 This class creates a delta file from all fna files
 A delta file is required to calculate the Average Nucleotide Index for nucmer(MUMmer, but use for nucleotides)
@@ -191,7 +191,7 @@ class AllDeltaFilesMummer():
           listOfFiles.append(currentFile)
     listOfFilesNoRepeats = list(OrderedDict.fromkeys(listOfFiles))
     print (listOfFilesNoRepeats)
-    n =  len(listOfFilesNoRepeats)
+    n = len(listOfFilesNoRepeats)
     print (n)
     os.chdir(mummerBaseDirectory)
     if not os.path.exists(saveDeltaFileNamesDirectory):
@@ -208,6 +208,7 @@ class AllDeltaFilesMummer():
           output = process.communicate()
           p_status = process.wait()
           print ("return code:", p_status)
+    print("AllDeltaFilesMummer(): completed!")
 '''
 This class calculates the average nucleotide index from delta files
 This class is intended and has only been tested after running classes:
@@ -244,9 +245,17 @@ class MUMmerANI():
     else:
       return ((sum(list1)/ x))
   def run(self):
-    vs = '__vs__'
     mummerBaseDirectory = TkANI.mummerDirectoryLocationString
     deltaFilesNamesDirectory = TkANI.deltaFilesDirectoryLocationString
+    catANIDirectory = TkANI.percentDirectoryLocationString
+    os.system("rm /Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt")
+    outputANIFile = open("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt", "w")
+    vs = '__vs__'
+    if(catANIDirectory == ""):
+      print(str("Error: Percent ouput directory entry is nil"))
+      return
+    if not os.path.exists(catANIDirectory):
+      os.mkdir(catANIDirectory, 0777)
     ext = ".delta"
     listOfFiles = []
     for root, subdir, files in os.walk(deltaFilesNamesDirectory, topdown=True):
@@ -264,6 +273,15 @@ class MUMmerANI():
       if s:
         if s != compareString:
           print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " +str(s) + "%")
+          catString = str(os.path.basename(listOfFilesNoRepeats[i])) + ":" +str(s) + "%" + "\n"
+          outputANIFile.write(catString)
+          '''
+          catCommand = "cat " + catString + " > " + "aFile"
+          print (catCommand)
+          os.system(catCommand)
+          '''
+    print("MummerAni(): completed!")
+    outputANIFile.close()
 '''
 This class creates out files from all fna files
 An out file is required to calculate the Average Nucleotide Index for blastn(blast, but use for nucleotides)
@@ -309,6 +327,7 @@ class AllOutFilesBlast():
           output = process.communicate()
           p_status = process.wait()
           print ("return code:", p_status)
+    print("AllOutFilesBlast(): completed")
 '''
 This class creates the average nucleotide index from out files
 This class is intended and has only been tested after running classes:
@@ -350,6 +369,7 @@ class BlastANI():
     ANI = total /length
     return round(ANI*100, 2)
     print (calculateANI(path))
+    print("BlastANI(): completed!")
     '''
     blastBaseDirectory = '/Users/jon6/ncbi-blast-2.2.29+/'
     outFilesNamesDirectory = '/Users/jon6/ncbi-blast-2.2.29+/'
@@ -480,7 +500,7 @@ class TkANI(Tkinter.Frame):
     self.outEntry.insert(0, str("/Users/jon/Desktop/blastOut"))
     self.mummerEntry.insert(0, str("/Users/jon/MUMmer3.23/"))
     self.deltaEntry.insert(0, str("/Users/jon/MUMmer3.23/allDeltaFiles/"))
-    self.percentEntry.insert(0, str("/Users/jon/Desktop/percentANIResultsDirectory"))
+    self.percentEntry.insert(0, str("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput"))
     
    # Queries directory containing files respective to BLAST
   def askAllFnaDirectory(self):
