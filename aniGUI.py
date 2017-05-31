@@ -394,7 +394,11 @@ class ReformatTextFileForConversion():
       for line in enumerate(reader):
         print(line[1][0].split("_"))
         x = line[1][0].split("_")
-        print(x[0])
+        for i, j in enumerate(x):
+          print(i,j)
+          print(x[i])
+          # print(x[1] + " " + x[3] + " " + x[10] + " " + x[11] + " " + x[14]) 
+          # x[12] or higher out of range 
 '''
 This class formats the text file outputted from BlastANI(): and MummersANI(): to JSON seed. This is done to be able to input into an iOS project for Core Data or another project utilizing JSON to read the data
 This class is intended and will only be tested after running classes:
