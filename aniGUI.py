@@ -9,6 +9,7 @@ import fileinput
 import shutil
 import datetime
 from datetime import datetime
+import csv
 '''
 This class will concatinate many .fna files into one .fna file
 Example:
@@ -82,7 +83,7 @@ Example Output:
 user/directory_1/directory_1.ext
 This class will run through all respective directories(directory_1, directory_2 ... directory_N)
 This class is intended and has only been tested after running classes:
-ConcatinatingFNAFiles():
+concatinatingFNAFiles():
 '''
 class ChangeFilesToDirectoryName():
   def run(self):
@@ -147,7 +148,7 @@ Example Output:
 Users/newDirectory/directory1.fna
 Users/newDirectory/directory2.fna
 This class is intended and has only been tested after running classes:
-ConcatinatingFNAFiles(): and class ChangeFilesToDirectoryName(): 
+concatinatingFNAFiles(): and class ChangeFilesToDirectoryName(): 
 
 Current bug: Will throw an os error if ran twice(Errno 21: Is a directory:)
 A string output is thrown if this bug is reproduced so the program doesn't crash
@@ -273,20 +274,16 @@ class MUMmerANI():
       if s:
         if s != compareString:
           print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " +str(s) + "%")
-          catString = str(os.path.basename(listOfFilesNoRepeats[i])) + ":" +str(s) + "%" + "\n"
+          catString = str(os.path.basename(listOfFilesNoRepeats[i])) + "_" +str(s) + "" + "\n"
+
           outputANIFile.write(catString)
-          '''
-          catCommand = "cat " + catString + " > " + "aFile"
-          print (catCommand)
-          os.system(catCommand)
-          '''
     print("MummerAni(): completed!")
     outputANIFile.close()
 '''
 This class creates out files from all fna files
 An out file is required to calculate the Average Nucleotide Index for blastn(blast, but use for nucleotides)
 This class is intended and has only been tested after running classes:
-Class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName(): and class CdFiles():
+class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName(): and class CdFiles():
 '''
 class AllOutFilesBlast():        
   'This program takes a list of .faa files from all.fna and calculates every one vs every other one on a unix machine'
@@ -389,6 +386,35 @@ class BlastANI():
       if s:
         print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " +str(s) + "%")
     '''
+class ReformatTextFileForConversion():
+  def run(self):
+    with open("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt") as infile, open("try.csv", "wb") as outfile:
+      reader = csv.reader(infile)
+      writer = csv.writer(outfile, quoting=False)
+      for line in enumerate(reader):
+        print(line[1][0].split("_"))
+        x = line[1][0].split("_")
+        print(x[0])
+'''
+This class formats the text file outputted from BlastANI(): and MummersANI(): to JSON seed. This is done to be able to input into an iOS project for Core Data or another project utilizing JSON to read the data
+This class is intended and will only be tested after running classes:
+class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName():, class CdFiles():
+and
+Class AllDeltaFilesMummer(): and class MummersANI(): 
+and / or 
+class AllOutFilesBlast(); and class BlastANI():
+'''
+class createJSONseed():
+  def run(self):
+    print("not complete")
+'''
+This class formats the text file outputted from BlastANI(): and MummersANI(): to SQL lite statement. This is done to enable an Android application or another project utilizing SQL lite to read the data
+This class is intended and will only be tested after running classes:
+class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName():, class CdFiles():
+'''
+class createSQLliteCreationStatement():
+  def run(self):
+    print("not complete")
 '''
 This class is the GUI class for the application
 When the user presses run, it will gather the inputs and execute def run(self):, which calls instances of other classes
@@ -408,12 +434,11 @@ class TkANI(Tkinter.Frame):
     self.concatinatingFNAFiles = ConcatinatingFNAFiles()
     self.changeFilesToDirectoryName = ChangeFilesToDirectoryName()
     self.copyFilesInstance = CopyFiles()
-
     self.allOutFilesBlast = AllOutFilesBlast()
     self.blastANI = BlastANI()
-
     self.allDeltaFilesMummer = AllDeltaFilesMummer()
     self.mummerANI = MUMmerANI()
+    self.reformatTextFileForConversion = ReformatTextFileForConversion()
 
   	# GUI inits
     Tkinter.Frame.__init__(self, root)
@@ -438,10 +463,8 @@ class TkANI(Tkinter.Frame):
      # Defining query directory buttons
     Tkinter.Button(self, text='Location Of all.fna Directory', command=self.askAllFnaDirectory, width=buttonWidth).grid(row=1, column=1, pady=(yPaddingAmount, yPaddingAmount))
     Tkinter.Button(self, text='BLAST Directory Containing Directories Of .fna Files', command=self.askBlastDirectory, width=buttonWidth).grid(row=2, column=1, pady=(yPaddingAmount, yPaddingAmount))
-
     Tkinter.Button(self, text='Out Files (from BLAST Output) Output Directory', command=self.askOutFilesOutputDirectory, width=buttonWidth).grid(row=4, column=1, pady=(yPaddingAmount, yPaddingAmount))
     Tkinter.Button(self, text='MUMmer Directory Location Containing Directories Of .fna Files', command=self.askMummerDirectory, width=buttonWidth).grid(row=3, column=1, pady=(yPaddingAmount, yPaddingAmount))
-
     Tkinter.Button(self, text='Delta Files (from MUMmer Output) Output Directory', command=self.askDeltaFilesOutputDirectory, width=buttonWidth).grid(row=5, column=1, pady=(yPaddingAmount, yPaddingAmount))
     Tkinter.Button(self, text='Percent ANI Output Results Directory', command=self.askPercentANIOutputDirectory, width=buttonWidth).grid(row=6, column=1, pady=(yPaddingAmount, yPaddingAmount))
 
@@ -491,8 +514,8 @@ class TkANI(Tkinter.Frame):
     self.blastCheckboxValue.set(0)
     self.blastANICheckboxValue.set(0)
     self.mummerCheckboxValue.set(0)
-    self.mummerANICheckboxValue.set(1)
-    self.sqlLiteCheckboxValue.set(0)
+    self.mummerANICheckboxValue.set(0)
+    self.sqlLiteCheckboxValue.set(1)
     self.jsonCheckboxValue.set(0)
     # Remove for generic program
     self.allFnaEntry.insert(0, str("/Users/jon/Desktop/allfnabackup3/all.fna"))
@@ -594,10 +617,11 @@ class TkANI(Tkinter.Frame):
       
     if self.sqlLiteCheckboxValue.get() == 1:
       print("s1")
+      self.reformatTextFileForConversion.run()
 
     if self.jsonCheckboxValue.get() == 1:
       print("j1")
-      print("Program completed at time: " + str(datetime.now()))
+    print("Program completed at time: " + str(datetime.now()))
 
 if __name__=='__main__':
    root = Tkinter.Tk()
