@@ -249,8 +249,9 @@ class MUMmerANI():
     mummerBaseDirectory = TkANI.mummerDirectoryLocationString
     deltaFilesNamesDirectory = TkANI.deltaFilesDirectoryLocationString
     catANIDirectory = TkANI.percentDirectoryLocationString
-    os.system("rm /Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt")
-    outputANIFile = open("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt", "w")
+    outputANIFileDirectoryFile = str(catANIDirectory) + "/outputANIFile.txt"
+    os.system("rm " + outputANIFileDirectoryFile)
+    outputANIFile = open(outputANIFileDirectoryFile, "w")
     vs = '__vs__'
     if(catANIDirectory == ""):
       print(str("Error: Percent ouput directory entry is nil"))
@@ -386,48 +387,92 @@ class BlastANI():
         print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " +str(s) + "%")
     '''
 class ReformatTextFileForConversion():
+  roundToPowerOfN = 0
+  genome1 = ""
+  species1 = ""
+  genome2 = ""
+  species2 = ""
+  percent1 = ""
+  percent2 = .42
+  percent3 = 42
+  
   def run(self):
-    with open("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt") as infile, open("try.txt", "wb") as outfile:
+    percentANIOutputDirectory = TkANI.percentDirectoryLocationString
+    percentANIFileOutput = percentANIOutputDirectory + "/outputANIFile.txt"
+
+    reformattedANIDirectory = TkANI.percentDirectoryLocationString
+    reformattedANIFileDirectoryFile = str(reformattedANIDirectory) + "/reformattedOutputANIFile.txt"
+
+    with open(percentANIFileOutput) as infile:
       reader = csv.reader(infile)
-      writer = csv.writer(outfile, quoting=False)
+      reformattedANIFile = open(reformattedANIFileDirectoryFile, "w")
       for line in enumerate(reader):
-        #print(line[1][0].split("_"))
         x = line[1][0].split("_")
-        # print(x[1] + " " + x[3] + " " + x[10] + " " + x[11] + " ")
         for i, j in enumerate(x):
-          #print(i,j)
-          genome1 = ""
-          species1 = ""
-          genome2 = ""
-          species2 = ""
-          percent1 = ""
           if i == 1:
-            genome1 = x[i]
-            print(genome1)
+            self.genome1 = x[i]
           if i == 3:
-            species1 = x[i]
-            y = str(genome1 + " " + species1 + "\n")
-            print(y)
-            outfile.write(y)
+            self.species1 = x[i]
           if i == 10:
-            species2 = x[i]
+            self.genome2 = x[i]
           if i == 11:
-            genome2 = x[i]
-            z = str(genome2 + " " + species2 + "\n")
-            outfile.write(z)
+            self.species2 = x[i]
           if i == 14:
             try: 
               float(x[i])
-              percent1 = x[i]
+              self.percent1 = x[i]
+              self.percent2 = round(float(x[i]), self.roundToPowerOfN)
+              self.percent3 = int(self.percent2)
             except:
               pass
           if i == 15:
-            try: 
+            try:
               float(x[i])
-              percent1 = x[i]
+              self.percent1 = x[i]
+              #self.percent2 = float(x[i])
+              self.percent2 = round(float(x[i]), self.roundToPowerOfN)
+              self.percent3 = int(self.percent2)
             except:
               pass
+          if i == 16:
+            try:
+              float(x[i])
+              self.percent1 = x[i]
+              self.percent2 = round(float(x[i]), self.roundToPowerOfN)
+              self.percent3 = int(self.percent2)
+            except:
+              pass
+          if i == 17:
+            try:
+              float(x[i])
+              self.percent1 = x[i]
+              self.percent2 = round(float(x[i]), self.roundToPowerOfN)
+              self.percent3 = int(self.percent2)
+            except:
+              pass
+          if i == 18:
+            try:
+              float(x[i])
+              self.percent1 = x[i]
+              self.percent2 = round(float(x[i]), self.roundToPowerOfN)
+              self.percent3 = int(self.percent2)
+            except:
+              pass
+        # print(str(self.genome1 + " " + self.species1 + " " + self.genome1 + " " + self.genome2))
+        # print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(round(self.percent1, 2))))
+        # print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent2)))
+        print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3)))
+        writeString = str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3) + "\n")
+        reformattedANIFile.write(writeString)
+        # 
+      reformattedANIFile.close()
+        #write string is right
+      print("ReformatTextFileForConversion(): completed!")  
 
+
+class RemoveDuplicates():
+  def run():
+    print("not complete")
 '''
 This class formats the text file outputted from BlastANI(): and MummersANI(): to JSON seed. This is done to be able to input into an iOS project for Core Data or another project utilizing JSON to read the data
 This class is intended and will only be tested after running classes:
@@ -437,7 +482,7 @@ Class AllDeltaFilesMummer(): and class MummersANI():
 and / or 
 class AllOutFilesBlast(); and class BlastANI():
 '''
-class createJSONseed():
+class CreateJSONseed():
   def run(self):
     print("not complete")
 '''
@@ -445,7 +490,7 @@ This class formats the text file outputted from BlastANI(): and MummersANI(): to
 This class is intended and will only be tested after running classes:
 class ConcatinatingFNAFiles(): , class ChangeFilesToDirectoryName():, class CdFiles():
 '''
-class createSQLliteCreationStatement():
+class CreateSQLliteCreationStatement():
   def run(self):
     print("not complete")
 '''
