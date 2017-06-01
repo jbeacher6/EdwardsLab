@@ -273,9 +273,8 @@ class MUMmerANI():
       s = self.calculateANI(listOfFilesNoRepeats[i])
       if s:
         if s != compareString:
-          print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " +str(s) + "%")
-          catString = str(os.path.basename(listOfFilesNoRepeats[i])) + "_" +str(s) + "" + "\n"
-
+          print (str(os.path.basename(listOfFilesNoRepeats[i])) + ": " + str(s) + "%")
+          catString = str(os.path.basename(listOfFilesNoRepeats[i])) + "_" + str(s) + "" + "\n"
           outputANIFile.write(catString)
     print("MummerAni(): completed!")
     outputANIFile.close()
@@ -388,17 +387,47 @@ class BlastANI():
     '''
 class ReformatTextFileForConversion():
   def run(self):
-    with open("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt") as infile, open("try.csv", "wb") as outfile:
+    with open("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput/outputANIFile.txt") as infile, open("try.txt", "wb") as outfile:
       reader = csv.reader(infile)
       writer = csv.writer(outfile, quoting=False)
       for line in enumerate(reader):
-        print(line[1][0].split("_"))
+        #print(line[1][0].split("_"))
         x = line[1][0].split("_")
+        # print(x[1] + " " + x[3] + " " + x[10] + " " + x[11] + " ")
         for i, j in enumerate(x):
-          print(i,j)
-          print(x[i])
-          # print(x[1] + " " + x[3] + " " + x[10] + " " + x[11] + " " + x[14]) 
-          # x[12] or higher out of range 
+          #print(i,j)
+          genome1 = ""
+          species1 = ""
+          genome2 = ""
+          species2 = ""
+          percent1 = ""
+          if i == 1:
+            genome1 = x[i]
+            print(genome1)
+          if i == 3:
+            species1 = x[i]
+            y = str(genome1 + " " + species1 + "\n")
+            print(y)
+            outfile.write(y)
+          if i == 10:
+            species2 = x[i]
+          if i == 11:
+            genome2 = x[i]
+            z = str(genome2 + " " + species2 + "\n")
+            outfile.write(z)
+          if i == 14:
+            try: 
+              float(x[i])
+              percent1 = x[i]
+            except:
+              pass
+          if i == 15:
+            try: 
+              float(x[i])
+              percent1 = x[i]
+            except:
+              pass
+
 '''
 This class formats the text file outputted from BlastANI(): and MummersANI(): to JSON seed. This is done to be able to input into an iOS project for Core Data or another project utilizing JSON to read the data
 This class is intended and will only be tested after running classes:
