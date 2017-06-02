@@ -469,10 +469,29 @@ class ReformatTextFileForConversion():
         #write string is right
       print("ReformatTextFileForConversion(): completed!")  
 
-
 class RemoveDuplicates():
-  def run():
-    print("not complete")
+  def run(self):
+    #dictionary
+    dictionary = ""
+    #in
+    reformattedANIDirectory = TkANI.percentDirectoryLocationString
+    reformattedANIFileDirectoryFile = str(reformattedANIDirectory) + "/reformattedOutputANIFile.txt"
+    #out
+    reformattedANIDirectory = TkANI.percentDirectoryLocationString
+    reformattedANIFileDirectoryFile2 = str(reformattedANIDirectory) + "/removedDuplicatesOutputANIFile2.txt"    
+    #
+    with open(reformattedANIFileDirectoryFile) as infile:
+      reader = csv.reader(infile)
+      reformattedANIFile = open(reformattedANIFileDirectoryFile2, "w")
+      for line in enumerate(reader):
+        x = line[1][0].split(" ")
+        for i, j in enumerate(x):
+          print(i,j)
+        # print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3)))
+        # writeString = str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3) + "\n")
+        #reformattedANIFile.write(writeString)
+      reformattedANIFile.close()
+    print("RemoveDuplicates(): completed!")
 '''
 This class formats the text file outputted from BlastANI(): and MummersANI(): to JSON seed. This is done to be able to input into an iOS project for Core Data or another project utilizing JSON to read the data
 This class is intended and will only be tested after running classes:
@@ -517,6 +536,7 @@ class TkANI(Tkinter.Frame):
     self.allDeltaFilesMummer = AllDeltaFilesMummer()
     self.mummerANI = MUMmerANI()
     self.reformatTextFileForConversion = ReformatTextFileForConversion()
+    self.removeDuplicates = RemoveDuplicates()
 
   	# GUI inits
     Tkinter.Frame.__init__(self, root)
@@ -593,14 +613,14 @@ class TkANI(Tkinter.Frame):
     self.blastANICheckboxValue.set(0)
     self.mummerCheckboxValue.set(0)
     self.mummerANICheckboxValue.set(0)
-    self.sqlLiteCheckboxValue.set(1)
-    self.jsonCheckboxValue.set(0)
+    self.sqlLiteCheckboxValue.set(0)
+    self.jsonCheckboxValue.set(1)
     # Remove for generic program
     self.allFnaEntry.insert(0, str("/Users/jon/Desktop/allfnabackup3/all.fna"))
     self.blastEntry.insert(0, str("/Users/jon/Desktop/testb"))
     self.outEntry.insert(0, str("/Users/jon/Desktop/blastOut"))
-    self.mummerEntry.insert(0, str("/Users/jon/MUMmer3.23/"))
-    self.deltaEntry.insert(0, str("/Users/jon/MUMmer3.23/allDeltaFiles/"))
+    self.mummerEntry.insert(0, str("/Users/jon/MUMmer3.23"))
+    self.deltaEntry.insert(0, str("/Users/jon/MUMmer3.23/allDeltaFiles"))
     self.percentEntry.insert(0, str("/Users/jon/Desktop/MUMmer3.23/percentANIFileOutput"))
     
    # Queries directory containing files respective to BLAST
@@ -700,6 +720,7 @@ class TkANI(Tkinter.Frame):
     if self.jsonCheckboxValue.get() == 1:
       print("j1")
     print("Program completed at time: " + str(datetime.now()))
+    self.removeDuplicates.run()
 
 if __name__=='__main__':
    root = Tkinter.Tk()
