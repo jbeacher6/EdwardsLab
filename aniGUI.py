@@ -392,20 +392,13 @@ class ReformatTextFileForConversion():
   species1 = ""
   genome2 = ""
   species2 = ""
-  percent1 = ""
   percent2 = .42
   percent3 = 42
   
   def run(self):
-    percentANIOutputDirectory = TkANI.percentDirectoryLocationString
-    percentANIFileOutput = percentANIOutputDirectory + "/outputANIFile.txt"
-
-    reformattedANIDirectory = TkANI.percentDirectoryLocationString
-    reformattedANIFileDirectoryFile = str(reformattedANIDirectory) + "/reformattedOutputANIFile.txt"
-
-    with open(percentANIFileOutput) as infile:
+    with open(str(TkANI.percentDirectoryLocationString) + "/outputANIFile.txt") as infile:
       reader = csv.reader(infile)
-      reformattedANIFile = open(reformattedANIFileDirectoryFile, "w")
+      reformattedANIFile = open(str(TkANI.percentDirectoryLocationString) + "/reformattedOutputANIFile.txt", "w")
       for line in enumerate(reader):
         x = line[1][0].split("_")
         for i, j in enumerate(x):
@@ -420,7 +413,6 @@ class ReformatTextFileForConversion():
           if i == 14:
             try: 
               float(x[i])
-              self.percent1 = x[i]
               self.percent2 = round(float(x[i]), self.roundToPowerOfN)
               self.percent3 = int(self.percent2)
             except:
@@ -428,8 +420,6 @@ class ReformatTextFileForConversion():
           if i == 15:
             try:
               float(x[i])
-              self.percent1 = x[i]
-              #self.percent2 = float(x[i])
               self.percent2 = round(float(x[i]), self.roundToPowerOfN)
               self.percent3 = int(self.percent2)
             except:
@@ -437,7 +427,6 @@ class ReformatTextFileForConversion():
           if i == 16:
             try:
               float(x[i])
-              self.percent1 = x[i]
               self.percent2 = round(float(x[i]), self.roundToPowerOfN)
               self.percent3 = int(self.percent2)
             except:
@@ -445,7 +434,6 @@ class ReformatTextFileForConversion():
           if i == 17:
             try:
               float(x[i])
-              self.percent1 = x[i]
               self.percent2 = round(float(x[i]), self.roundToPowerOfN)
               self.percent3 = int(self.percent2)
             except:
@@ -453,45 +441,40 @@ class ReformatTextFileForConversion():
           if i == 18:
             try:
               float(x[i])
-              self.percent1 = x[i]
               self.percent2 = round(float(x[i]), self.roundToPowerOfN)
               self.percent3 = int(self.percent2)
             except:
               pass
-        # print(str(self.genome1 + " " + self.species1 + " " + self.genome1 + " " + self.genome2))
-        # print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(round(self.percent1, 2))))
-        # print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent2)))
         print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3)))
         writeString = str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3) + "\n")
         reformattedANIFile.write(writeString)
-        # 
       reformattedANIFile.close()
-        #write string is right
       print("ReformatTextFileForConversion(): completed!")  
 
 class RemoveDuplicates():
   def run(self):
-    #dictionary
-    dictionary = ""
-    #in
-    reformattedANIDirectory = TkANI.percentDirectoryLocationString
-    reformattedANIFileDirectoryFile = str(reformattedANIDirectory) + "/reformattedOutputANIFile.txt"
-    #out
-    reformattedANIDirectory = TkANI.percentDirectoryLocationString
-    reformattedANIFileDirectoryFile2 = str(reformattedANIDirectory) + "/removedDuplicatesOutputANIFile2.txt"    
-    #
-    with open(reformattedANIFileDirectoryFile) as infile:
+    listOfLines = []
+    y = ""
+    list2 = ""
+    with open(str(TkANI.percentDirectoryLocationString) + "/reformattedOutputANIFile.txt") as infile:
       reader = csv.reader(infile)
-      reformattedANIFile = open(reformattedANIFileDirectoryFile2, "w")
+      reformattedANIFile = open(str(TkANI.percentDirectoryLocationString) + "/removedDuplicatesOutputANIFile2.txt", "w")
       for line in enumerate(reader):
         x = line[1][0].split(" ")
         for i, j in enumerate(x):
-          print(i,j)
-        # print(str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3)))
-        # writeString = str(self.genome1 + " " + self.species1 + " " + self.genome2 + " " + self.species2 + " " + str(self.percent3) + "\n")
-        #reformattedANIFile.write(writeString)
+          if(i == 0):
+            y = ""
+          y = y + " " + str(j)
+          if(i == 4):
+            listOfLines.append(y)
+      list2 = list(OrderedDict.fromkeys(listOfLines))
+      for i, j in enumerate(list2):
+        writeString = str(j) + "\n"
+        reformattedANIFile.write(writeString)
+      # print(list2)
       reformattedANIFile.close()
     print("RemoveDuplicates(): completed!")
+
 '''
 This class formats the text file outputted from BlastANI(): and MummersANI(): to JSON seed. This is done to be able to input into an iOS project for Core Data or another project utilizing JSON to read the data
 This class is intended and will only be tested after running classes:
@@ -614,7 +597,7 @@ class TkANI(Tkinter.Frame):
     self.mummerCheckboxValue.set(0)
     self.mummerANICheckboxValue.set(0)
     self.sqlLiteCheckboxValue.set(0)
-    self.jsonCheckboxValue.set(1)
+    self.jsonCheckboxValue.set(0)
     # Remove for generic program
     self.allFnaEntry.insert(0, str("/Users/jon/Desktop/allfnabackup3/all.fna"))
     self.blastEntry.insert(0, str("/Users/jon/Desktop/testb"))
