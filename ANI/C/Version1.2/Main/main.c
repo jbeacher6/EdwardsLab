@@ -68,6 +68,8 @@ int main() {
             int minimumLines = 0;
             int maximumLines = 0;
             int numCharsLeft = 0;
+            int numKmersLeft = 0;
+            int numEditDistanceValueLeft = 0;
             int chr = 0;
             int chr2 = 0;
             int kmerCount = 0;
@@ -127,15 +129,19 @@ int main() {
                     }
                 }
                 if(kmerCount == numKmersMin) {
-					numCharsLeft = (numCharsMax - numCharsMin)/KMERSIZE;
-					finalANI = finalANI + numCharsLeft;
-					break;
+					if(numCharsMax > numCharsMin) {
+                        numCharsLeft = numCharsMax - numCharsMin;
+                        numKmersLeft = (numCharsLeft - 1) - KMERSIZE;
+                        numEditDistanceValueLeft = numKmersLeft*KMERSIZE;
+                        finalANI = finalANI + numEditDistanceValueLeft;
+                        break;
+                    }
+                    break;
                 }
                 int kmerANI = editDistance(tempArr, tempArr2, KMERSIZE, KMERSIZE);
                 finalANI = finalANI + kmerANI;
                 kmerCount++;
             }
-            printf("kmerCount: %d\n", kmerCount);
             printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
             free(fna1Characters);
             free(fna2Characters);
