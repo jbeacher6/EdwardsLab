@@ -131,9 +131,9 @@ int main() {
                     }
                 }
                 if(kmerCount == numKmersMin) {
-						numCharsLeft = (numCharsMax - numCharsMin)/KMERSIZE;
-						finalANI = finalANI + numCharsLeft;
-						break;
+					numCharsLeft = (numCharsMax - numCharsMin)/KMERSIZE;
+					finalANI = finalANI + numCharsLeft;
+					break;
                 }
                 int kmerANI = editDistance(tempArr, tempArr2, KMERSIZE, KMERSIZE);
                 finalANI = finalANI + kmerANI;
