@@ -108,7 +108,7 @@ int main() {
                 numCharsMax = file1Size;
             }
             int numCharsMin2 = numCharsMin - minimumLines;// - \n
-			int numCharsMax2 = numCharsMax - minimumLines;// - \n
+			int numCharsMax2 = numCharsMax - maximumLines;// - \n
             int numKmersMin = (numCharsMin2 - 1) - KMERSIZE;
             int numKmersMax = (numCharsMax2 - 1) - KMERSIZE;
             for(int i = 0; i < numCharsMin2; i++) {
