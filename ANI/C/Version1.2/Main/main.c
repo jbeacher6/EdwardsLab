@@ -94,10 +94,6 @@ int main() {
             //future: filter if filesize*.25 for around 75% or above simularity matches only
             int numCharsMin = 0;
             int numCharsMax = 0;
-
-            printf("fileSize: %ld\n",file1Size);
-            printf("fileSize: %ld\n", file2Size);
-            
             if(file1Size < file2Size) {
                 numCharsMin = file1Size;
                 minimumLines = numLines1;
