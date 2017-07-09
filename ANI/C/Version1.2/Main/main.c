@@ -10,10 +10,10 @@
 const int LINESIZE = 70;
 const int KMERSIZE = 2;
 const int fnaFilesDirectoryStringLengthBuffer = 100 + 2;
-const char fnaFilesDirectory[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/Desktop/Version133/Main/fna/"};
+const char fnaFilesDirectory[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/Desktop/Version1336/Main/fna/"};
 const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
-const int amountOfFNAFilesBuffer = 2200;
+const int amountOfFNAFilesBuffer = 3200;
 const int nameLength = 100;
 
 int main() {
@@ -73,6 +73,10 @@ int main() {
             int chr = 0;
             int chr2 = 0;
             int kmerCount = 0;
+            double total = 0; 
+            double difference = 0;
+            double simularity = 0;
+            double hundredSimularity = 0;
             ptr=fna1Characters[0];
             ptr2=fna2Characters[0];
             FILE *file1;
@@ -142,7 +146,12 @@ int main() {
                 finalANI = finalANI + kmerANI;
                 kmerCount++;
             }
+            total = numKmersMax*KMERSIZE;
+            difference = finalANI/total;
+            simularity = 1 - difference;
+            hundredSimularity = simularity*100;
             printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
+            printf("%s %s Simularity: %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimularity);
             free(fna1Characters);
             free(fna2Characters);
             finalANI = 0;
