@@ -15,7 +15,7 @@ const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
 const int amountOfFNAFilesBuffer = 3200;
 const int nameLength = 100;
-const int FILESIMULARITYCONST = 75;
+const int FILESIMILARITYCONST = 75;
 
 int main() {
     int fnaFileCount = 0;
@@ -62,8 +62,8 @@ int main() {
     FILE *fnaPointer;
       for(int i = 0; i < fnaFileCount; i++) {
         for(int j = i; j < fnaFileCount; j++) {
-            double fileSimularityDouble = 0;
-            int fileSimularityInt = 0;
+            double fileSimilarityDouble = 0;
+            int fileSimilarityInt = 0;
             int numCharsMin = 0;
             int numCharsMax = 0;
             long long file1Size = 0;
@@ -81,9 +81,9 @@ int main() {
                 numCharsMin = file2Size;
                 numCharsMax = file1Size;
             }
-            fileSimularityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
-            fileSimularityInt = (int) fileSimularityDouble;
-            if(fileSimularityInt > FILESIMULARITYCONST) {//&& file1Size != file2Size to omit same files
+            fileSimilarityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
+            fileSimilarityInt = (int) fileSimilarityDouble;
+            if(fileSimilarityInt > FILESIMILARITYCONST) {//&& file1Size != file2Size to omit same files
                 int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
                 int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
                 char **fna1Characters = fnaCharactersOf(fnaArrayMalloc[i], LINESIZE, numLines1);
@@ -98,8 +98,8 @@ int main() {
                 int kmerCount = 0;
                 double total = 0; 
                 double difference = 0;
-                double simularity = 0;
-                double hundredSimularity = 0;
+                double similarity = 0;
+                double hundredSimilarity = 0;
                 ptr=fna1Characters[0];
                 ptr2=fna2Characters[0];
                 if(file1Size < file2Size) {
@@ -146,17 +146,17 @@ int main() {
                 }
                 total = numKmersMax*KMERSIZE;
                 difference = finalANI/total;
-                simularity = 1 - difference;
-                hundredSimularity = simularity*100;
+                similarity = 1 - difference;
+                hundredSimilarity = similarity*100;
                 printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
-                printf("%s %s Simularity: %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimularity);
+                printf("%s %s Similarity: %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimilarity);
                 free(fna1Characters);
                 free(fna2Characters);
                 finalANI = 0;
             }
             /*
             else {
-                printf("\n %s %s File Simularity too low, simularity: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], fileSimularityInt);
+                printf("\n %s %s File Similarity too low, similarity: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], fileSimilarityInt);
             }*/
         }
     }
