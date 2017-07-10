@@ -58,7 +58,7 @@ int main() {
     const int kmerSizeMod = KMERSIZE+1;
     int finalANI = 0;
     char *ptr, *ptr2;
-    char tempArr[kmerSizeMod], tempArr2[kmerSizeMod];
+    char kmerArr[kmerSizeMod], kmerArr2[kmerSizeMod];
     FILE *fnaPointer;
       for(int i = 0; i < fnaFileCount; i++) {
         for(int j = i; j < fnaFileCount; j++) {
@@ -120,14 +120,14 @@ int main() {
                             chr2 = i;
                         }
                         if(j==kmerSizeMod-1) {
-                            tempArr[j] = '\0';
+                            kmerArr[j] = '\0';
                         } else {
-                            tempArr[j] = ptr[chr++];
+                            kmerArr[j] = ptr[chr++];
                         }
                         if(j==kmerSizeMod-1) {
-                            tempArr2[j] = '\0';
+                            kmerArr2[j] = '\0';
                         } else {
-                            tempArr2[j] = ptr2[chr2++];
+                            kmerArr2[j] = ptr2[chr2++];
                         }
                     }
                     if(kmerCount == numKmersMin) {
@@ -140,7 +140,7 @@ int main() {
                         }
                         break;
                     }
-                    int kmerANI = editDistance(tempArr, tempArr2, KMERSIZE, KMERSIZE);
+                    int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
                     finalANI = finalANI + kmerANI;
                     kmerCount++;
                 }
