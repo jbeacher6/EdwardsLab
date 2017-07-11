@@ -13,7 +13,7 @@ char** fnaCharactersOf(const char* fnaFileNameAndLocation, const int LINESIZE, c
         printf("%s", "Error: fnaPointer is null\n");
         exit(EXIT_FAILURE);
     }//Get first line of .fna file(doesn't include respective ACGT)
-    fgets(firstLineOfChars, DATABUFFER, fnaPointer);
+    //fgets(firstLineOfChars, DATABUFFER, fnaPointer);
     char **fnaArrayMalloc = (char**) malloc(numberOfLines*sizeof(char*));
     if(fnaArrayMalloc == NULL) {
         printf("%s", "Error: fnaArrayMalloc\n");
