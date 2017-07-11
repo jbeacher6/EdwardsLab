@@ -151,17 +151,18 @@ int main() {
                     if(strlen(kmerArr) == 1 && strlen(kmerArr) == 1) {
                         break;
                     }*/
+                    /*
                     if(kmerCount == numKmersMin) {
-                        /*
+                        
 					   if(numCharsMax > numCharsMin) {
                             numCharsLeft = numCharsMax - numCharsMin;
                             numKmersLeft = (numCharsLeft - 1) - KMERSIZE;
                             numEditDistanceValueLeft = numKmersLeft*KMERSIZE;
                             finalANI = finalANI + numEditDistanceValueLeft;
                             break;
-                        }*/
+                        }
                         break;
-                    }
+                    }*/
                     printf("kmerArr:  %s\n", kmerArr);
                     printf("kmerArr2: %s\n", kmerArr2);
                     int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
