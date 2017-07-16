@@ -17,9 +17,10 @@ const int KMERSIZE = 2;
 //Length of the string of the fna file directory
 const int fnaFilesDirectoryStringLengthBuffer = 100 + 2;
 //Forward DNA Files
-const char fnaFilesDirectory[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/Desktop/fna2/"};
+///Example: Users/jon/desktop/version15/Main/fna10/
+const char fnaFilesDirectory[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version15/Main/subFNA1/"};
 //Reverse Compliment DNA Files
-const char fnaFilesDirectory2[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/Desktop/fna3/"};
+const char fnaFilesDirectory2[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version15/Main/subFNA2/"};
 //Minimum length of the FNA file name
 const int minimumFnaFileStringLength = 4;
 //Size of ".fna"(4)
@@ -29,7 +30,7 @@ const int amountOfFNAFilesBuffer = 3200;
 //Buffer for the max name length. A ceiling estimation, it can be over the amount but not under the actual amount
 const int nameLength = 100;
 //What percentage the files are similar in an integer value
-const int FILESIMILARITYCONST = 75;
+const int FILESIMILARITYCONST = 0;
 //
 int main() {
     //--------------------------------------------------------------------------Forward DNA FNA Files---
@@ -94,7 +95,7 @@ int main() {
     if(fnaFilesDirectoryPointer2) {
         while ((direntFnaDirectory2 = readdir(fnaFilesDirectoryPointer2)) != NULL) {
             int strlenString2 = strlen(direntFnaDirectory2->d_name);
-            if( strlenString2 > minimumFnaFileStringLength) {
+            if(strlenString2 > minimumFnaFileStringLength) {
                 memcpy(checkIfFNA2, &direntFnaDirectory2->d_name[strlenString2 - fnaFilesDirectoryStringLengthMinusOne2], fnaFilesDirectoryStringLengthMinusOne2);
                 if (strcmp(checkIfFNA,fnaString) == 0) {
                     int strlenString2 = strlen(fnaFilesDirectory2);
@@ -120,6 +121,8 @@ int main() {
     char kmerArr[kmerSizeMod], kmerArr2[kmerSizeMod], kmerArr3[kmerSizeMod];
     //Cycle through the list of all fna files(Forward and Reverse should be the same size)
       for(int i = 0; i < fnaFileCount; i++) {
+        //printf("%s \n", fnaArrayMalloc[i]);
+        //printf("%s \n", fnaArrayMalloc2[i]);
         //Go through list of fna files without repeats (j=i)
         for(int j = i; j < fnaFileCount; j++) {
             //Double of file similarity percentage(based on # characters, not number of kmers)
@@ -155,6 +158,8 @@ int main() {
             //Calculate which files are similar to eachtother. This is done to filter out low similarity files before computing
             fileSimilarityInt = (int) fileSimilarityDouble;
             //
+            //printf("fileSimilarityInt: %d\n", fileSimilarityInt);
+            //printf("FILESIMILARITYCONST: %d\n", FILESIMILARITYCONST);
             if(fileSimilarityInt > FILESIMILARITYCONST) {//&& file1Size != file2Size to omit same files
                 int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
                 int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
@@ -225,7 +230,7 @@ int main() {
                 int numKmersMax = (numCharsMax2) - KMERSIZE;
                 //printf("numCharsMin2: %d\n", numCharsMin2);
                 //int boolean1 = 0;
-                //Cycle through the number of characters in the file without the null pointers 
+                //Cycle through the number of characters in the file without the null pointers
                 for(int i = 0; i < numCharsMax2; i++) {
                     //Cycle through and add kmers to temporary kmerArrays, including the \n
                     for(int j = 0; j < kmerSizeMod; j++) {
