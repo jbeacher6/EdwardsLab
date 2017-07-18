@@ -11,8 +11,8 @@
 const int LINESIZE = 70;
 const int KMERSIZE = 2;
 const int fnaFilesDirectoryStringLengthBuffer = 39 + 2;
-const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version15/Main/fna6/"};
-const char fnaFilesDirectoryConstantRC[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version15/Main/fna7/"};
+const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version18/Main/fna3/"};
+const char fnaFilesDirectoryConstantRC[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version18/Main/fna4/"};
 const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
 const int amountOfFNAFilesBuffer = 3200;
@@ -23,7 +23,7 @@ void calculateANIforwardForward(const char fnaFilesDirectory[]);
 void calculateANIforwardReverseCompliment(const char fnaFilesDirectory[], const char fnaFilesDirectory2[]);
 
 int main() {
-    //calculateANIforwardForward(fnaFilesDirectoryConstant);
+    calculateANIforwardForward(fnaFilesDirectoryConstant);
     calculateANIforwardReverseCompliment(fnaFilesDirectoryConstant, fnaFilesDirectoryConstantRC);
     return 0;
 }
@@ -31,6 +31,7 @@ int main() {
 void calculateANIforwardForward(const char fnaFilesDirectory[]) {
     //printf("%s\n", *fnaFilesDirectory);
     //printf("%s\n", *fnaFilesDirectory2);
+    int numCalcs1 = 0;
     int fnaFileCount = 0;
     DIR *fnaFilesDirectoryPointer;
     struct dirent *direntFnaDirectory;
@@ -192,6 +193,7 @@ void calculateANIforwardForward(const char fnaFilesDirectory[]) {
 
 void calculateANIforwardReverseCompliment(const char fnaFilesDirectory[], const char fnaFilesDirectory2[]) {
  //--------------------------------------------------------------------------Forward DNA FNA Files---
+    int numCalcs2 = 0;
     int fnaFileCount = 0;
     DIR *fnaFilesDirectoryPointer;
     struct dirent *direntFnaDirectory;
@@ -300,7 +302,34 @@ void calculateANIforwardReverseCompliment(const char fnaFilesDirectory[], const 
             }
             //printf("\nnumCharsMin: \n%d\n", numCharsMax);
             //printf("\nnumCharsMax: \n%d\n", numCharsMin);
-            if(strcmp(fnaArrayMalloc[i], fnaArrayMalloc2[j]) != 0) {
+            char dirSlash = '/';
+            char *dirSlashPtr1 = NULL;
+            dirSlashPtr1 = strrchr(fnaArrayMalloc[i], dirSlash);
+            int lenPtr1 = strlen(dirSlashPtr1);
+            //printf("The last occurrence of %c in '%s' is '%s' with length %d\n", dirSlash, fnaArrayMalloc[i], dirSlashPtr1, lenPtr1);
+            int lenDir1 = strlen(fnaArrayMalloc2[j]);
+            int totalLenSubString1 = lenDir1 - lenPtr1;
+            char subString1[200];
+            //printf("%s\n", getSubString(fnaArrayMalloc[i], subString1, 0, totalLenSubString1));
+            //printf("", getSubString(fnaArrayMalloc[i], subString14, 0, totalLenSubString));
+            //if(strcmp(getSubString(fnaArrayMalloc[i], subString14, 0, totalLenSubString), getSubString(fnaArrayMalloc2[j], subString13, 0, totalLenSubString)) ==0) {
+            //printf("\n Same: %s %s\n", fnaArrayMalloc[i], fnaArrayMalloc2[j]);
+            char *dirSlashPtr2 = NULL;
+            dirSlashPtr2 = strrchr(fnaArrayMalloc2[j], dirSlash);
+            int lenPtr2 = strlen(dirSlashPtr2);
+            int lenDir2 = strlen(fnaArrayMalloc2[j]);
+            int totalLenSubString2 = lenDir2 - lenPtr2;
+            char subString2[200];
+            //printf("%s", getSubString(fnaArrayMalloc2[j], subString2, 0, totalLenSubString2));
+            //printf("The last occurrence of %c in '%s' is '%s' with length %d\n", dirSlash, fnaArrayMalloc2[j], dirSlashPtr2, lenPtr2);            
+            /*
+            if(strcmp(getSubString(fnaArrayMalloc[i], subString1, 0, totalLenSubString1), getSubString(fnaArrayMalloc2[j], subString2, 0, totalLenSubString2)) != 0) {
+              printf("\n Same: %s %s\n", fnaArrayMalloc[i], fnaArrayMalloc2[j]);
+            }*/
+            //printf("\n %s %s blah:\n", fnaArrayMalloc[i], fnaArrayMalloc2[j]);
+            //printf("%s %s\n", getSubString(fnaArrayMalloc[i], subString1, 0, totalLenSubString1), getSubString(fnaArrayMalloc2[j], subString2, 0, totalLenSubString2));
+            //if(strcmp(dirSlashPtr1, dirSlashPtr2) != 0) {
+            //if(strcmp(fnaArrayMalloc[i], fnaArrayMalloc2[j]) == 0) {
             fileSimilarityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
             fileSimilarityInt = (int) fileSimilarityDouble;
             if(fileSimilarityInt > FILESIMILARITYCONST) {//&& file1Size != file2Size to omit same files
@@ -339,7 +368,6 @@ void calculateANIforwardReverseCompliment(const char fnaFilesDirectory[], const 
                 //printf("numkmerMin: %d\n", numKmersMin);
                 int numKmersMax = (numCharsMax2) - KMERSIZE;
                 //printf("numCharsMin2: %d\n", numCharsMin2);
-
                 for(int i = 0; i < numCharsMax2; i++) {
                     for(int j = 0; j < kmerSizeMod; j++) {
                         if(j == 0) {
@@ -364,10 +392,10 @@ void calculateANIforwardReverseCompliment(const char fnaFilesDirectory[], const 
                         break;
                     }
                     //printf("\n%s %s\n", fnaArrayMalloc[i], fnaArrayMalloc2[j]);
-                    printf("kmerArr:  %s\n", kmerArr);
-                    printf("kmerArr2: %s\n", kmerArr2);
+                    //printf("kmerArr:  %s\n", kmerArr);
+                    //printf("kmerArr2: %s\n", kmerArr2);
                     int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
-                    printf("kmerANI: %d\n", kmerANI);
+                    //printf("kmerANI: %d\n", kmerANI);
                     finalANI = finalANI + kmerANI;
                     kmerCount++;
                     //printf("kmerCount: %d\n", kmerCount);
@@ -388,6 +416,7 @@ void calculateANIforwardReverseCompliment(const char fnaFilesDirectory[], const 
                 printf("\n %s %s File Similarity too low, similarity: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], fileSimilarityInt);
             }*/
             }
-        } 
-    }  
+            }
+        //} 
+    //}  
 }
