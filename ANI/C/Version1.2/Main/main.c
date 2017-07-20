@@ -7,7 +7,8 @@
 #include "numberOfLinesLib.h"
 #include "FNACharactersLib.h"
 #include "levenshteinDistanceLib.h"
-
+//fna Files Directory Constant: fna files of forward ncbi files
+//fna Files Directory RC: fna files of reverse complimented ncbi files
 const int LINESIZE = 70;
 const int KMERSIZE = 2;
 const int fnaFilesDirectoryStringLengthBuffer = 39 + 2;
