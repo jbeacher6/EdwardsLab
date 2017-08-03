@@ -9,9 +9,9 @@
 #include "levenshteinDistanceLib.h"
 //fna Files Directory Constant: fna files of forward and concatinated reverse complimented ncbi files
 const int LINESIZE = 70;
-const int KMERSIZE = 2;
+const int KMERSIZE = 12;
 const int fnaFilesDirectoryStringLengthBuffer = 39 + 2;
-const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version25/Main/fna13/"};
+const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version25/Main/fna14/"};
 const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
 const int amountOfFNAFilesBuffer = 3200;
@@ -163,7 +163,6 @@ void calculateANI(const char fnaFilesDirectory[]) {
                             kmerArr3[j] = ptr3[chr3++];
                         }
                     }
-                    
                     if(strlen(kmerArr) != KMERSIZE) {
                         break;
                     }
@@ -174,24 +173,32 @@ void calculateANI(const char fnaFilesDirectory[]) {
                         break;
                     }
                     int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
+                    /*
                     printf("kmerArr:  %s\n", kmerArr);
                     printf("kmerArr2: %s\n", kmerArr2);
                     printf("kmerANI: %d\n", kmerANI);
+                    */
                     int kmerANI2 = editDistance(kmerArr, kmerArr3, KMERSIZE, KMERSIZE);
+                    /*
                     printf("kmerArr:  %s\n", kmerArr);
                     printf("kmerArr3: %s\n", kmerArr3);
                     printf("kmerANI: %d\n", kmerANI2);
-                    finalANI = finalANI + kmerANI;
+                    */
+                    if(kmerANI < kmerANI2) {
+                        finalANI = finalANI + kmerANI;
+                    } else {
+                        finalANI = finalANI + kmerANI2;
+                    }
                     kmerCount++;
                     //printf("kmerCount: %d\n", kmerCount);
                 }
-                //total = numKmersMax*KMERSIZE;
-                //difference = finalANI/total;
-                //similarity = 1 - difference;
-                //hundredSimilarity = similarity*100;
+                total = numKmersMax*KMERSIZE;
+                difference = finalANI/total;
+                similarity = 1 - difference;
+                hundredSimilarity = similarity*100;
                 //printf("kmerCount: %d\n", kmerCount);
                 printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
-                //printf("%s %s Similarity: %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimilarity);
+                printf("%s %s Similarity: %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimilarity);
                 free(fna1Characters);
                 free(fna2Characters);
                 //return finalANI;
