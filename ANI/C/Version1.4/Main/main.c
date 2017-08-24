@@ -7,26 +7,33 @@
 #include "numberOfLinesLib.h"
 #include "FNACharactersLib.h"
 #include "levenshteinDistanceLib.h"
-#include "binaryDistance.h"
+#include "binaryDistanceLib.h"
 //fna Files Directory Constant: fna files of forward and concatinated reverse complimented ncbi files
 const int LINESIZE = 70;
-const int KMERSIZE = 12;//if binary, multiply the actual kmer size by two (A=10, etc)
-const int fnaFilesDirectoryStringLengthBuffer = 39 + 2;
-const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {"/Users/jon/desktop/version25/Main/fna14/"};
+const int fnaFilesDirectoryStringLengthBuffer = 302;
 const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
 const int amountOfFNAFilesBuffer = 3200;
-const int nameLength = 100;
-const int FILESIMILARITYCONST = 1;
+const int nameLength = 300;
 
-void calculateANI(const char fnaFilesDirectory[]);
+void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST);
 
-int main() {
-    calculateANI(fnaFilesDirectoryConstant);
+int main(int argc, char *argv[]) {
+    if(argc >= 4) {
+        const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {*argv[1]};
+        const int kmerSizeConstant = ((int) *argv[2] - '0')*2;
+        const int fileSimConstant = (int) *argv[3] - '0';
+        calculateANI(argv[1], kmerSizeConstant, fileSimConstant);
+        //printf("directory: %s kmerSize*2: %d\n fileSimilarityConstant: %d", argv[1], kmerSizeConstant, fileSimConstant);
+    }
+    else {
+        printf("Error, incorrect arguments entered\n ./a.out /tree/directoryOfBinaryFNAFiles/ kmerSize fileSimilarityConstant \n ./a.out /tree/directoryOfBinaryFNAFiles/ kmerSize fileSimilarityConstant > output.txt");
+        exit(EXIT_FAILURE);
+    }
     return 0;
 }
 
-void calculateANI(const char fnaFilesDirectory[]) {
+void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST) {
     //printf("%s\n", *fnaFilesDirectory);
     //printf("%s\n", *fnaFilesDirectory2);
     int numCalcs1 = 0;
@@ -78,6 +85,7 @@ void calculateANI(const char fnaFilesDirectory[]) {
             //printf("%s j \n", fnaArrayMalloc[j]);
             double fileSimilarityDouble = 0;
             int fileSimilarityInt = 0;
+            float fileSimilarityFloat = 0;
             int numCharsMin = 0;
             int numCharsMax = 0;
             long long file1Size = 0;
@@ -98,117 +106,120 @@ void calculateANI(const char fnaFilesDirectory[]) {
             //printf("\nnumCharsMin: \n%d\n", numCharsMax);
             //printf("\nnumCharsMax: \n%d\n", numCharsMin);
             if(strcmp(fnaArrayMalloc[i], fnaArrayMalloc[j]) != 0) {
+                fileSimilarityFloat = (float) numCharsMin / (float) numCharsMax;
                 fileSimilarityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
                 fileSimilarityInt = (int) fileSimilarityDouble;
                 if(fileSimilarityInt > FILESIMILARITYCONST) {
-                int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
-                int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
-                //printf("\nnumLines1: \n%d\n", numLines1);
-                //printf("\nnumLines2: \n%d\n", numLines2);  
-                char **fna1Characters = NULL;
-                fna1Characters = fnaCharactersOf(fnaArrayMalloc[i], LINESIZE, numLines1);
-                char **fna2Characters = NULL;
-                fna2Characters = fnaCharactersOf(fnaArrayMalloc[j], LINESIZE, numLines2);
-                int minimumLines = 0;
-                int maximumLines = 0;
-                int numCharsLeft = 0;
-                int numKmersLeft = 0;
-                int numEditDistanceValueLeft = 0;
-                int chr = 0;
-                int chr2 = 0;
-                int chr3 = 0;
-                int kmerCount = 0;
-                double total = 0; 
-                double difference = 0;
-                double similarity = 0;
-                double hundredSimilarity = 0;
-                if(file1Size < file2Size) {
-                    minimumLines = numLines1;
-                    maximumLines = numLines2;
-                } else {
-                    minimumLines = numLines2;
-                    maximumLines = numLines1;
-                }
-                int numCharsMin2 = numCharsMin;// - minimumLines;// - \n
-                int numCharsMax2 = numCharsMax;// - maximumLines;// - \n
-                int numKmersMin = (numCharsMin2) - KMERSIZE;
-                //printf("numkmerMin: %d\n", numKmersMin);
-                int numKmersMax = (numCharsMax2) - KMERSIZE;
-                //printf("numCharsMin2: %d\n", numCharsMin2);
-                ptr=fna1Characters[0];
-                ptr2=fna2Characters[0];
-                int numCharsMinHalf = numCharsMin2 / 2;
-                ptr3=fna2Characters[0];
-                for(int i = 0; i < numCharsMinHalf; i++) {
-                    for(int j = 0; j < kmerSizeMod; j++) {
-                        if(j == 0) {
-                            chr = i;
-                            chr2 = i;
-                            chr3 = i+numCharsMinHalf;
-                        }
-                        if(j==kmerSizeMod-1) {
-                            kmerArr[j] = '\0';
-                        } else {
-                            kmerArr[j] = ptr[chr++];
-                        }
-                        if(j==kmerSizeMod-1) {
-                            kmerArr2[j] = '\0';
-                        } else {
-                            kmerArr2[j] = ptr2[chr2++];
-                        }
-                        if(j==kmerSizeMod-1) {
-                            kmerArr3[j] = '\0';
-                        } else {
-                            kmerArr3[j] = ptr3[chr3++];
-                        }
-                    }
-                    if(strlen(kmerArr) != KMERSIZE) {
-                        break;
-                    }
-                    if(strlen(kmerArr2) != KMERSIZE) {
-                        break;
-                    }
-                    if(strlen(kmerArr3) != KMERSIZE) {
-                        break;
-                    }
-                    //int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
-                    int kmerANI = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
-                    /*
-                    printf("kmerArr:  %s\n", kmerArr);
-                    printf("kmerArr2: %s\n", kmerArr2);
-                    printf("kmerANI: %d\n", kmerANI);
-                    */
-                    //int kmerANI2 = editDistance(kmerArr, kmerArr3, KMERSIZE, KMERSIZE);
-                    int kmerANI2 = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
-                    /*
-                    printf("kmerArr:  %s\n", kmerArr);
-                    printf("kmerArr3: %s\n", kmerArr3);
-                    printf("kmerANI: %d\n", kmerANI2);
-                    */
-                    if(kmerANI < kmerANI2) {
-                        finalANI = finalANI + kmerANI;
+                    int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
+                    int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
+                    //printf("\nnumLines1: \n%d\n", numLines1);
+                    //printf("\nnumLines2: \n%d\n", numLines2);  
+                    char **fna1Characters = NULL;
+                    fna1Characters = fnaCharactersOf(fnaArrayMalloc[i], LINESIZE, numLines1);
+                    char **fna2Characters = NULL;
+                    fna2Characters = fnaCharactersOf(fnaArrayMalloc[j], LINESIZE, numLines2);
+                    int minimumLines = 0;
+                    int maximumLines = 0;
+                    int numCharsLeft = 0;
+                    int numKmersLeft = 0;
+                    int numEditDistanceValueLeft = 0;
+                    int chr = 0;
+                    int chr2 = 0;
+                    int chr3 = 0;
+                    int kmerCount = 0;
+                    double total = 0; 
+                    double difference = 0;
+                    double similarity = 0;
+                    double hundredSimilarity = 0;
+                    if(file1Size < file2Size) {
+                        minimumLines = numLines1;
+                        maximumLines = numLines2;
                     } else {
-                        finalANI = finalANI + kmerANI2;
+                        minimumLines = numLines2;
+                        maximumLines = numLines1;
                     }
-                    kmerCount++;
+                    int numCharsMin2 = numCharsMin;// - minimumLines;// - \n
+                    int numCharsMax2 = numCharsMax;// - maximumLines;// - \n
+                    int numKmersMin = (numCharsMin2) - KMERSIZE;
+                    //printf("numkmerMin: %d\n", numKmersMin);
+                    int numKmersMax = (numCharsMax2) - KMERSIZE;
+                    //printf("numCharsMin2: %d\n", numCharsMin2);
+                    ptr=fna1Characters[0];
+                    ptr2=fna2Characters[0];
+                    int numCharsMinHalf = numCharsMin2 / 2;
+                    ptr3=fna2Characters[0];
+                    for(int i = 0; i < numCharsMinHalf; i++) {
+                        for(int j = 0; j < kmerSizeMod; j++) {
+                            if(j == 0) {
+                                chr = i;
+                                chr2 = i;
+                                chr3 = i+numCharsMinHalf;
+                            }
+                            if(j==kmerSizeMod-1) {
+                                kmerArr[j] = '\0';
+                            } else {
+                                kmerArr[j] = ptr[chr++];
+                            }
+                            if(j==kmerSizeMod-1) {
+                                kmerArr2[j] = '\0';
+                            } else {
+                                kmerArr2[j] = ptr2[chr2++];
+                            }
+                            if(j==kmerSizeMod-1) {
+                                kmerArr3[j] = '\0';
+                            } else {
+                                kmerArr3[j] = ptr3[chr3++];
+                            }
+                        }
+                        if(strlen(kmerArr) != KMERSIZE) {
+                            break;
+                        }
+                        if(strlen(kmerArr2) != KMERSIZE) {
+                            break;
+                        }
+                        if(strlen(kmerArr3) != KMERSIZE) {
+                            break;
+                        }
+                        //int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
+                        int kmerANI = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
+                        
+                        printf("kmerArr:  %s\n", kmerArr);
+                        printf("kmerArr2: %s\n", kmerArr2);
+                        printf("kmerANI: %d\n", kmerANI);
+                        
+                        int kmerANI2 = binaryDistance(kmerArr, kmerArr3, KMERSIZE);
+                        //int kmerANI2 = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
+                        
+                        printf("kmerArr:  %s\n", kmerArr);
+                        printf("kmerArr3: %s\n", kmerArr3);
+                        printf("kmerANI: %d\n", kmerANI2);
+                        
+                        if(kmerANI < kmerANI2) {
+                            finalANI = finalANI + kmerANI;
+                        } else {
+                            finalANI = finalANI + kmerANI2;
+                        }
+                        kmerCount++;
+                        //printf("kmerCount: %d\n", kmerCount);
+                    }
+                    total = numKmersMax*KMERSIZE;
+                    difference = finalANI/total;
+                    similarity = 1 - difference;
+                    hundredSimilarity = similarity*100;
+                    printf("kmerCount: %d\n", kmerCount);
+                    
                     //printf("kmerCount: %d\n", kmerCount);
+                    //printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
+                    printf("%s %s %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimilarity);
+                    free(fna1Characters);
+                    free(fna2Characters);
+                    //return finalANI;
+                    finalANI = 0;
                 }
-                total = numKmersMax*KMERSIZE;
-                difference = finalANI/total;
-                similarity = 1 - difference;
-                hundredSimilarity = similarity*100;
-                //printf("kmerCount: %d\n", kmerCount);
-                printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
-                printf("%s %s Similarity: %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimilarity);
-                free(fna1Characters);
-                free(fna2Characters);
-                //return finalANI;
-                finalANI = 0;
-            }
-            /*
-            else {
-                printf("\n %s %s File Similarity too low, similarity: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], fileSimilarityInt);
-            }*/ 
+                /*
+                else {
+                    printf("\n %s %s File Similarity too low, similarity: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], fileSimilarityInt);
+                }*/ 
             }
         } 
     }  
