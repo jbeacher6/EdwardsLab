@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
+#include <libgen.h>
 #include "numberOfLinesLib.h"
 #include "FNACharactersLib.h"
 #include "levenshteinDistanceLib.h"
@@ -21,10 +23,13 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
 int main(int argc, char *argv[]) {
     if(argc >= 4) {
         const char fnaFilesDirectoryConstant[fnaFilesDirectoryStringLengthBuffer] = {*argv[1]};
-        const int kmerSizeConstant = ((int) *argv[2] - '0')*2;
-        const int fileSimConstant = (int) *argv[3] - '0';
+        //const int kmerSizeConstant = ((int) *argv[2] - '0')*2;
+        //const int fileSimConstant = (int) *argv[3] - '0';
+        const int kmerSizeConstant = atoi(argv[2]);
+        const int fileSimConstant = atoi(argv[3]);
+        //printf("directory: %s kmerSize*2: %d\n fileSimilarityConstant: %d\n", argv[1], kmerSizeConstant, fileSimConstant);
+        printf("INSERT INTO anilyzeTable (Bacteria1, Bacteria2, Percentage) \nVALUES \n");
         calculateANI(argv[1], kmerSizeConstant, fileSimConstant);
-        //printf("directory: %s kmerSize*2: %d\n fileSimilarityConstant: %d", argv[1], kmerSizeConstant, fileSimConstant);
     }
     else {
         printf("Error, incorrect arguments entered\n ./a.out /tree/directoryOfBinaryFNAFiles/ kmerSize fileSimilarityConstant \n ./a.out /tree/directoryOfBinaryFNAFiles/ kmerSize fileSimilarityConstant > output.txt");
@@ -85,7 +90,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
             //printf("%s j \n", fnaArrayMalloc[j]);
             double fileSimilarityDouble = 0;
             int fileSimilarityInt = 0;
-            float fileSimilarityFloat = 0;
+            float fileSimilarityFloatDecimal = 0;
             int numCharsMin = 0;
             int numCharsMax = 0;
             long long file1Size = 0;
@@ -106,10 +111,13 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
             //printf("\nnumCharsMin: \n%d\n", numCharsMax);
             //printf("\nnumCharsMax: \n%d\n", numCharsMin);
             if(strcmp(fnaArrayMalloc[i], fnaArrayMalloc[j]) != 0) {
-                fileSimilarityFloat = (float) numCharsMin / (float) numCharsMax;
+                fileSimilarityFloatDecimal = ((float) numCharsMin / (float) numCharsMax);
                 fileSimilarityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
                 fileSimilarityInt = (int) fileSimilarityDouble;
-                if(fileSimilarityInt > FILESIMILARITYCONST) {
+                if(fileSimilarityFloatDecimal*100 > FILESIMILARITYCONST) {
+                //printf("fileSimilarityInt:%d\n", fileSimilarityInt);
+                //printf("fileSimilarityFloat: \n%f\n", fileSimilarityFloatDecimal*100);
+                //printf("fileSimilarityConstant: \n%d\n", FILESIMILARITYCONST);
                     int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
                     int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
                     //printf("\nnumLines1: \n%d\n", numLines1);
@@ -149,68 +157,75 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     int numCharsMinHalf = numCharsMin2 / 2;
                     ptr3=fna2Characters[0];
                     for(int i = 0; i < numCharsMinHalf; i++) {
-                        for(int j = 0; j < kmerSizeMod; j++) {
-                            if(j == 0) {
-                                chr = i;
-                                chr2 = i;
-                                chr3 = i+numCharsMinHalf;
+                        if(i%2 == 0) {//account for binary
+                            for(int j = 0; j < kmerSizeMod; j++) {
+                                if(j == 0) {
+                                    chr = i;
+                                    chr2 = i;
+                                    chr3 = i+numCharsMinHalf;
+                                }
+                                if(j==kmerSizeMod-1) {
+                                    kmerArr[j] = '\0';
+                                } else {
+                                    kmerArr[j] = ptr[chr++];
+                                }
+                                if(j==kmerSizeMod-1) {
+                                    kmerArr2[j] = '\0';
+                                } else {
+                                    kmerArr2[j] = ptr2[chr2++];
+                                }
+                                if(j==kmerSizeMod-1) {
+                                    kmerArr3[j] = '\0';
+                                } else {
+                                    kmerArr3[j] = ptr3[chr3++];
+                                }
                             }
-                            if(j==kmerSizeMod-1) {
-                                kmerArr[j] = '\0';
+                            if(strlen(kmerArr) != KMERSIZE) {
+                                break;
+                            }
+                            if(strlen(kmerArr2) != KMERSIZE) {
+                                break;
+                            }
+                            if(strlen(kmerArr3) != KMERSIZE) {
+                                break;
+                            }
+                            //int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
+                            int kmerANI = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
+                            /*
+                            printf("kmerArr:  %s\n", kmerArr);
+                            printf("kmerArr2: %s\n", kmerArr2);
+                            printf("kmerANI: %d\n", kmerANI);*/
+                            int kmerANI2 = binaryDistance(kmerArr, kmerArr3, KMERSIZE);
+                            /*
+                            printf("kmerArr:  %s\n", kmerArr);
+                            printf("kmerArr3: %s\n", kmerArr3);
+                            printf("kmerANI: %d\n", kmerANI2);*/
+                            
+                            if(kmerANI < kmerANI2) {
+                                finalANI = finalANI + kmerANI;
                             } else {
-                                kmerArr[j] = ptr[chr++];
+                                finalANI = finalANI + kmerANI2;
                             }
-                            if(j==kmerSizeMod-1) {
-                                kmerArr2[j] = '\0';
-                            } else {
-                                kmerArr2[j] = ptr2[chr2++];
-                            }
-                            if(j==kmerSizeMod-1) {
-                                kmerArr3[j] = '\0';
-                            } else {
-                                kmerArr3[j] = ptr3[chr3++];
+                            
+                            //finalANI = finalANI + kmerANI + kmerANI2;
+                            kmerCount++;
+                            //printf("kmerCount: %d\n", kmerCount);
                             }
                         }
-                        if(strlen(kmerArr) != KMERSIZE) {
-                            break;
-                        }
-                        if(strlen(kmerArr2) != KMERSIZE) {
-                            break;
-                        }
-                        if(strlen(kmerArr3) != KMERSIZE) {
-                            break;
-                        }
-                        //int kmerANI = editDistance(kmerArr, kmerArr2, KMERSIZE, KMERSIZE);
-                        int kmerANI = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
-                        
-                        printf("kmerArr:  %s\n", kmerArr);
-                        printf("kmerArr2: %s\n", kmerArr2);
-                        printf("kmerANI: %d\n", kmerANI);
-                        
-                        int kmerANI2 = binaryDistance(kmerArr, kmerArr3, KMERSIZE);
-                        //int kmerANI2 = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
-                        
-                        printf("kmerArr:  %s\n", kmerArr);
-                        printf("kmerArr3: %s\n", kmerArr3);
-                        printf("kmerANI: %d\n", kmerANI2);
-                        
-                        if(kmerANI < kmerANI2) {
-                            finalANI = finalANI + kmerANI;
-                        } else {
-                            finalANI = finalANI + kmerANI2;
-                        }
-                        kmerCount++;
-                        //printf("kmerCount: %d\n", kmerCount);
-                    }
-                    total = numKmersMax*KMERSIZE;
+                    total = (numKmersMax/2)*(KMERSIZE/2);//account for binary
+                    //printf("numKmersMax: %d\n", numKmersMax/2);//account for binary
                     difference = finalANI/total;
                     similarity = 1 - difference;
                     hundredSimilarity = similarity*100;
-                    printf("kmerCount: %d\n", kmerCount);
-                    
+                    //hundredSimilarity = similarity*fileSimilarityFloatDecimal*100;
+                    /*
+                    printf("difference: %f\n", difference);
+                    printf("total: %f\n", total);
+                    printf("finalANI: %d\n", finalANI);
+                    */
                     //printf("kmerCount: %d\n", kmerCount);
                     //printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
-                    printf("%s %s %f\n", fnaArrayMalloc[i], fnaArrayMalloc[j], hundredSimilarity);
+                    printf("   ('%s', '%s', '%f'), \n", basename(fnaArrayMalloc[i]), basename(fnaArrayMalloc[j]), hundredSimilarity);
                     free(fna1Characters);
                     free(fna2Characters);
                     //return finalANI;
