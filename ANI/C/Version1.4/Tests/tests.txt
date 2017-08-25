@@ -38,7 +38,7 @@ Instructions:
 1. Download TestFiles
 2. Open Terminal and execute the program with command after changing respective custom directory information, such as the user name or download location: python anilyzePrep.py -i /Users/user/downloads/tests/testFiles -o /Users/user/downloads/tests/testCaseOut
 Optional: For help: python anilyzePrep.py -h
-3. Open /tests/testCaseOut/complete/complete/test1.fna
+3. Open /tests/testCase1and2Out/complete/complete/test1.fna
 Expected Output: 
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -52,7 +52,7 @@ GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 
 Result: Pass
-4. Open /tests/complete/complete/test2.fna
+4. Open /tests/testCase1and2Out/complete/complete/test2.fna
 Expected Output: 
 GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
@@ -71,7 +71,7 @@ The custom binary sequence is: A is 00, C is 01, G is 10 and T is 11
 Instructions: 
 1. Already ran instructions from test case 1
 
-2. Open /tests/testCaseOut/complete/binary/complete/test1.fna
+2. Open /tests/testCase1and2Out/complete/binary/complete/test1.fna
 Expected Output: 
 0000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000
@@ -93,7 +93,7 @@ Output:
 1111111111111111111111111111111111111111111111111111111111111111111111
 
 Result: Pass
-3. Open /tests/complete/binary/complete/test2.fna
+3. Open /tests/testCase1and2Out/complete/binary/complete/test2.fna
 Expected Output: 
 1010101010101010101010101010101010101010101010101010101010101010101010
 1010101010101010101010101010101010101010101010101010101010101010101010
@@ -128,14 +128,50 @@ gcc -c binaryDistanceLib.c -o binaryDistanceLib.o
 gcc -c FNACharactersLib.c -o FNACharactersLib.o
 gcc -c numberOfLinesLib.c -o numberOfLinesLib.o
 gcc main.c binaryDistanceLib.o FNACharactersLib.o numberOfLinesLib.o
-./a.out /tests/testCaseOut/complete/binary/complete/ 2 1
-
+./a.out /tests/testCase3Out/ 2 1
 2 is the number of kmers and 1 is the percent file similarity threshold
+
+3. With
+fna1 contents: 
+header
+CAT
+fna2 contests: 
+header
+TAG
+
+4. Run Test Case 1, Test Case 2
+
 Expected Output:
+kmerArr:  0100
+kmerArr2: 1100
+kmerANI: 1
+kmerArr:  0100
+kmerArr3: 0111
+kmerANI: 1
+kmerArr:  0011
+kmerArr2: 0010
+kmerANI: 1
+kmerArr:  0011
+kmerArr3: 1100
+kmerANI: 2
 
 Output:
+kmerArr:  0100
+kmerArr2: 1100
+kmerANI: 1
+kmerArr:  0100
+kmerArr3: 0111
+kmerANI: 1
+kmerArr:  0011
+kmerArr2: 0010
+kmerANI: 1
+kmerArr:  0011
+kmerArr3: 1100
+kmerANI: 2
 
-Result: 
+Result: Pass
+
+
 
 
 
