@@ -398,7 +398,41 @@ class ConvertToBinary2():
     print("ReverseComplimentComplete(): complete")
     print("Script 100 percent complete")
 
+class Split16S():
+  def run(self, inputFileParam, outputDirectoryParam):
+    x = 0
+    #"/Users/jon/desktop/split/split16S"
+    os.system("mkdir " + outputDirecotryParam)
+    firstLine = True
+    fnaName = ''
+    prevFileName = ''
+    newFileName = ''
+    #'/Users/jon/Desktop/split/sequence.fasta'
+    with open(inputFileParam) as file:
+      for line in file:
+      if line.strip() == '':
+        firstLine = True
+        x += 1
+      else:
+        if firstLine is True:
+          fnaList = line.strip().split()
+          fnaName = fnaList[1] + "_" + fnaList[2]
+          newFileName = outputDirectoryParam + str(fnaName) + ".fna"
+          if str(newFileName) == str(prevFileName):
+            newFileName = outputDirectoryParam + str(fnaName) + str(x) + ".fna"
+          else:
+            prevFileName = newFileName
+            newFileName = outputDirectoryParam + str(fnaName) + ".fna"
+        else: 
+          with open(newFileName, 'a') as newFile:
+            newFile.write(line.strip())
+        firstLine = False
+   file.close()
+
 def main(argv):
+  tree_i = False
+  split_i = False
+  i = False
   try:
     optionals, arguments = getopt.getopt(argv,"hi:o:",["inputArg=","outputArg="])
   except getopt.GetoptError as error:
@@ -412,12 +446,12 @@ def main(argv):
       print '************************************************************************************************************************************'
       print 'If .fna files are in a tree(one branch length max) and need to be renamed:'
       print 'python anilyzePrep.py -tree_i <Unzipped all.fna.tar.gz Directory> -o <Anilyze Prep Output Directory>'
-      print 'Example: python anilyzePrep.py -dir_i /Users/user/desktop/all.fna/ -dir_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
+      print 'Example: python anilyzePrep.py -tree_i /Users/user/desktop/all.fna/ -tree_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
       print 'Example Files: /path/Examplo_Bacterii/1.fna and /path/Examplus_Bacterii/2.fna'
       print ''
       print 'If .fna files are not in a tree:'
       print 'python anilyzePrep.py -i <Directory of .fna files> -o <Anilyze Prep Output Directory>'
-      print 'Example: python anilyzePrep.py -dir_i /Users/user/desktop/all.fna/ -dir_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
+      print 'Example: python anilyzePrep.py -tree_i /Users/user/desktop/all.fna/ -tree_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
       print 'Example Files: /path/Examplo_Bacterii.fna and /path/Examplus_Bacterii.fna'
       print ''
       print '------------------------------------------------------------------------------------------------------------------------------------'
@@ -448,14 +482,24 @@ def main(argv):
       print '************************************************************************************************************************************'
       sys.exit()
     elif opt in ("-tree_i", "--inDir"):
-      dir_i = True
+      tree_i = True
+      split_i = False
       inputArg = arg
+    elif opt in ("-split_i", "--inDir"):
+      split_i = True
+      tree_i = False
+      i = False
+      outputArg = arg
     elif opt in ("-i", "--inDir"):
-      dir_i = False
+      i = True
+      tree_i = False
+      split_i = False
       inputArg = arg
     elif opt in ("-o", "--outDir"):
-      dir_i = False
       outputArg = arg
+    else:
+      print 'python anilyzePrep.py -h'
+
   print 'Input file is "', inputArg
   print 'Output file is "', outputArg
   #
@@ -466,7 +510,7 @@ def main(argv):
   if os.path.isdir(outputArg) is False:
     print 'InvalidDirectory'
     sys.exit(2)
-  if dir_i is True:
+  if tree_i is True:
      concatinateAndModifyManyFNAFilesInDirectory = ConcatinateAndModifyManyFNAFilesInDirectory()
      concatinateAndModifySingleFNAFileInDirectory = ConcatinateAndModifySingleFNAFileInDirectory()
      reverseComplimentComplete = ReverseComplimentComplete()
@@ -475,7 +519,10 @@ def main(argv):
      concatinateAndModifySingleFNAFileInDirectory.run(inputArg, outputArg)
      reverseComplimentComplete.run(inputArg, outputArg)
      convertToBinary.run(inputArg, outputArg)
-  else:
+  if split_i is True:
+     split16S = Split16S()
+     split16S.run(inputArg, outputArg)
+  if i is True:
      reverseComplimentComplete2 = ReverseComplimentComplete2()
      convertToBinary2 = ConvertToBinary2()
      reverseComplimentComplete2.run(inputArg, outputArg)
