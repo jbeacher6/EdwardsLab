@@ -278,6 +278,126 @@ class ConvertToBinary():
     print("ReverseComplimentComplete(): complete")
     print("Script 100 percent complete")
 
+class ReverseComplimentComplete2():
+  def run(self, inputDirectoryParam, outputDirectoryParam):
+    mkdirCatCommand = "mkdir " + outputDirectoryParam + "complete" 
+    print(str(mkdirCatCommand))
+    os.system(mkdirCatCommand)
+    mkdirMODCommand = "mkdir " + outputDirectoryParam + "complete/MOD"
+    os.system(mkdirMODCommand)
+    mkdirMODCommand2 = "mkdir " + outputDirectoryParam + "complete/MOD2"
+    os.system(mkdirMODCommand2)
+    mkdirMODCommand3 = "mkdir " + outputDirectoryParam + "complete/complete"
+    os.system(mkdirMODCommand3)
+    mkdirRcCommand = "mkdir " + outputDirectoryParam + "rc"
+    os.system(mkdirRcCommand)
+    ext = ".fna"
+    outputDirectory = outputDirectoryParam
+    reformattedDirectory = outputDirectoryParam
+    #creates reverse compliment of TkANI.allFnaDirectoryLocationString and puts the result in TkANI.allFnaDirectoryLocationString/rc
+    directoryRC = outputDirectory + "rc"
+    #
+    for root, dir, files in os.walk(inputDirectoryParam, topdown=True):
+      for f in files:
+        if f.endswith(ext):
+          filePath = inputDirectoryParam + f
+          with open(filePath) as file:
+            currentFile = ((os.path.join(root, f)))
+            seqString = file.read()
+            seq = Seq(seqString)
+            base = os.path.basename(outputDirectoryParam)
+            newFileString = outputDirectoryParam + "rc/" + f
+            newFile = open(newFileString, "w")
+            string = seq.reverse_complement()
+            newFile.write(str(string))
+            newFile.close()
+    #concatinate reverse compliment
+    for root, dir, files in os.walk(inputDirectoryParam, topdown=True):
+      for f in files:
+        if f.endswith(ext):
+          fileReformatted = inputDirectoryParam + f
+          fileRC = outputDirectoryParam + "rc/" + f
+          fileComplete = outputDirectoryParam + "complete/MOD/" + f
+          catCommand = "cat " + fileReformatted + " " + fileRC + " > " + fileComplete
+          os.system(catCommand)
+    #format to a line length of 70
+    directoryCompleteMOD = outputDirectoryParam + "complete/MOD/"
+    directoryCompleteMOD2 = outputDirectoryParam + "complete/MOD2/"
+    directoryCompleteMOD3 = outputDirectoryParam + "complete/complete/"
+    #
+    for root, dir, files in os.walk(directoryCompleteMOD, topdown=True):
+      for f in files:
+        if f.endswith(ext):
+          currentFile = ((os.path.join(root, f)))
+          newFNAfileName1 = directoryCompleteMOD2 + str(f)
+          newFNAfileName2 = directoryCompleteMOD3 + str(f)
+          #remove all new lines
+          rmNewLinesCommand = "tr -d '\n' < " + currentFile + " > " + newFNAfileName1
+          os.system(rmNewLinesCommand)
+          #modify to 70 characters long
+          grepLinesCommand = "grep -oE '.{1,70}' " + newFNAfileName1 + " > " + newFNAfileName2
+          os.system(grepLinesCommand)
+    shutil.rmtree(directoryRC)
+    shutil.rmtree(directoryCompleteMOD)
+    shutil.rmtree(directoryCompleteMOD2)
+    #shutil.rmtree(directoryCompleteMOD3)       
+    print("ReverseComplimentComplete(): complete")
+
+class ConvertToBinary2(): 
+  def run(self, inputDirectoryParam, outputDirectoryParam):
+    x = 0
+    binaryString = ""
+    binaryDirectory = outputDirectoryParam + "complete/binary" 
+    mkdirBinaryCommand = "mkdir " + binaryDirectory
+    os.system(mkdirBinaryCommand)
+    mkdirBinaryCommand2 = "mkdir " + binaryDirectory + "/trLines"
+    os.system(mkdirBinaryCommand2)
+    mkdirBinaryCommand3 = "mkdir " + binaryDirectory + "/complete"
+    os.system(mkdirBinaryCommand3)
+    mkdirBinaryCommand4 = "mkdir " + binaryDirectory + "/incomplete"
+    os.system(mkdirBinaryCommand4)
+    completeDirectory = outputDirectoryParam + "complete/complete/"
+    ext = ".fna"
+    for root, dir, files in os.walk(completeDirectory, topdown=True):
+      for f in files:
+        if f.endswith(ext):
+          fileMod = completeDirectory + f
+          with open(fileMod) as file:
+            binaryString = ""
+            for line in file:
+              for character in line:
+                if character == "A":
+                  binaryString += "00"
+                elif character == "C":
+                  binaryString += "01"
+                elif character == "G":
+                  binaryString += "10"
+                elif character == "T":
+                  binaryString += "11"
+                else:
+                  if character != "\n" and character != "A" and character != "G" and character != "C" and character != "T":
+                    #print("error: " + str(character) + " in " + str(fileMod) + " is not a newline, A C G or T")
+                    x =+1
+            currentFile = ((os.path.join(root, f)))
+            #base = os.path.basename(outputDirectoryParam)
+            newFileString = binaryDirectory + "/incomplete/" + f
+            newFile = open(newFileString, "w")
+            newFile.write(str(binaryString))
+            newFile.close()
+            #
+            newFNAfileName1 = binaryDirectory + "/trLines/" + str(f)
+            newFNAfileName2 = binaryDirectory + "/complete/" + str(f)
+            #remove all new lines
+            rmNewLinesCommand = "tr -d '\n' < " + newFileString + " > " + newFNAfileName1
+            os.system(rmNewLinesCommand)
+            #modify to 70 characters long
+            grepLinesCommand = "grep -oE '.{1,70}' " + newFNAfileName1 + " > " + newFNAfileName2
+            os.system(grepLinesCommand)
+    shutil.rmtree(binaryDirectory + "/trLines")
+    shutil.rmtree(binaryDirectory + "/incomplete")
+    print("ReverseComplimentComplete(): complete")
+    print("Script 100 percent complete")
+
 def main(argv):
   try:
     optionals, arguments = getopt.getopt(argv,"hi:o:",["inputArg=","outputArg="])
@@ -287,11 +407,19 @@ def main(argv):
     sys.exit(2)
   for opt, arg in optionals:
     if opt == '-h':
-     print '************************************************************************************************************************************'
+      print '************************************************************************************************************************************'
       print '                                                         Anilyze Prep Help                                                          '                                                                    
       print '************************************************************************************************************************************'
-      print 'python anilyzePrep.py -i <Unzipped all.fna.tar.gz Directory> -o <Anilyze Prep Output Directory>'
-      print 'Example: python anilyzePrep.py -i /Users/jon/desktop/all.fna/ -o /Users/jon/desktop/AnilyzePrepOutputDirectory/'
+      print 'If .fna files are in a tree(one branch length max) and need to be renamed:'
+      print 'python anilyzePrep.py -tree_i <Unzipped all.fna.tar.gz Directory> -o <Anilyze Prep Output Directory>'
+      print 'Example: python anilyzePrep.py -dir_i /Users/user/desktop/all.fna/ -dir_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
+      print 'Example Files: /path/Examplo_Bacterii/1.fna and /path/Examplus_Bacterii/2.fna'
+      print ''
+      print 'If .fna files are not in a tree:'
+      print 'python anilyzePrep.py -i <Directory of .fna files> -o <Anilyze Prep Output Directory>'
+      print 'Example: python anilyzePrep.py -dir_i /Users/user/desktop/all.fna/ -dir_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
+      print 'Example Files: /path/Examplo_Bacterii.fna and /path/Examplus_Bacterii.fna'
+      print ''
       print '------------------------------------------------------------------------------------------------------------------------------------'
       print '                                                     Prerequisite Instructions                                                      '
       print '------------------------------------------------------------------------------------------------------------------------------------'
@@ -305,8 +433,9 @@ def main(argv):
       print '------------------------------------------------------------------------------------------------------------------------------------'
       print '                                                        Hardware Requirements                                                       '
       print '------------------------------------------------------------------------------------------------------------------------------------'
-      print '1. 60GB of space'
-      print '2. Program tested on 4GB of RAM'
+      print '1. About 30 times the size of the input directory as a tar.gz file'
+      print '2. 60GB of space needed for all.fna.tar.gz(2.93GB)'
+      print '3. Program tested on 4GB of RAM'
       print '------------------------------------------------------------------------------------------------------------------------------------'
       print '                                                                Other                                                               '
       print '------------------------------------------------------------------------------------------------------------------------------------'
@@ -318,9 +447,14 @@ def main(argv):
       print '                                                                                                                                    '                                                                    
       print '************************************************************************************************************************************'
       sys.exit()
+    elif opt in ("-tree_i", "--inDir"):
+      dir_i = True
+      inputArg = arg
     elif opt in ("-i", "--inDir"):
+      dir_i = False
       inputArg = arg
     elif opt in ("-o", "--outDir"):
+      dir_i = False
       outputArg = arg
   print 'Input file is "', inputArg
   print 'Output file is "', outputArg
@@ -332,14 +466,20 @@ def main(argv):
   if os.path.isdir(outputArg) is False:
     print 'InvalidDirectory'
     sys.exit(2)
-  concatinateAndModifyManyFNAFilesInDirectory = ConcatinateAndModifyManyFNAFilesInDirectory()
-  concatinateAndModifySingleFNAFileInDirectory = ConcatinateAndModifySingleFNAFileInDirectory()
-  reverseComplimentComplete = ReverseComplimentComplete()
-  convertToBinary = ConvertToBinary()
-  concatinateAndModifyManyFNAFilesInDirectory.run(inputArg, outputArg)
-  concatinateAndModifySingleFNAFileInDirectory.run(inputArg, outputArg)
-  reverseComplimentComplete.run(inputArg, outputArg)
-  convertToBinary.run(inputArg, outputArg)
+  if dir_i is True:
+     concatinateAndModifyManyFNAFilesInDirectory = ConcatinateAndModifyManyFNAFilesInDirectory()
+     concatinateAndModifySingleFNAFileInDirectory = ConcatinateAndModifySingleFNAFileInDirectory()
+     reverseComplimentComplete = ReverseComplimentComplete()
+     convertToBinary = ConvertToBinary()
+     concatinateAndModifyManyFNAFilesInDirectory.run(inputArg, outputArg)
+     concatinateAndModifySingleFNAFileInDirectory.run(inputArg, outputArg)
+     reverseComplimentComplete.run(inputArg, outputArg)
+     convertToBinary.run(inputArg, outputArg)
+  else:
+     reverseComplimentComplete2 = ReverseComplimentComplete2()
+     convertToBinary2 = ConvertToBinary2()
+     reverseComplimentComplete2.run(inputArg, outputArg)
+     convertToBinary2.run(inputArg, outputArg)
   print("Program completed at time: " + str(datetime.now()))
 #main  
 if __name__=='__main__':

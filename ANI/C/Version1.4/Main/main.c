@@ -15,10 +15,10 @@ const int LINESIZE = 70;
 const int fnaFilesDirectoryStringLengthBuffer = 302;
 const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
-const int amountOfFNAFilesBuffer = 3200;
+//const int amountOfFNAFilesBuffer = 15200;
 const int nameLength = 300;
 
-void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST);
+void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST, const int amountOfFNAFilesBuffer);
 
 int main(int argc, char *argv[]) {
     if(argc >= 4) {
@@ -27,9 +27,10 @@ int main(int argc, char *argv[]) {
         //const int fileSimConstant = (int) *argv[3] - '0';
         const int kmerSizeConstant = atoi(argv[2]);
         const int fileSimConstant = atoi(argv[3]);
-        //printf("directory: %s kmerSize*2: %d\n fileSimilarityConstant: %d\n", argv[1], kmerSizeConstant, fileSimConstant);
-        printf("INSERT INTO anilyzeTable (Bacteria1, Bacteria2, Percentage) \nVALUES \n");
-        calculateANI(argv[1], kmerSizeConstant, fileSimConstant);
+        const int amountOFFNAFilesBufferConstant = atoi(argv[4]);
+        //printf("directory: %s kmerSize*2: %d\n fileSimilarityConstant: %d amountOfFNAFilesBufferConstant %d\n", argv[1], kmerSizeConstant, fileSimConstant, amountOfFNAFilesBufferConstant);
+        printf("INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, Percentage) \nVALUES \n");
+        calculateANI(argv[1], kmerSizeConstant, fileSimConstant, amountOFFNAFilesBufferConstant);
     }
     else {
         printf("Error, incorrect arguments entered\n ./a.out /tree/directoryOfBinaryFNAFiles/ kmerSize fileSimilarityConstant \n ./a.out /tree/directoryOfBinaryFNAFiles/ kmerSize fileSimilarityConstant > output.txt");
@@ -38,7 +39,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST) {
+void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST, const int amountOfFNAFilesBuffer) {
     //printf("%s\n", *fnaFilesDirectory);
     //printf("%s\n", *fnaFilesDirectory2);
     int numCalcs1 = 0;
@@ -218,14 +219,70 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     similarity = 1 - difference;
                     hundredSimilarity = similarity*100;
                     //hundredSimilarity = similarity*fileSimilarityFloatDecimal*100;
-                    /*
-                    printf("difference: %f\n", difference);
-                    printf("total: %f\n", total);
-                    printf("finalANI: %d\n", finalANI);
-                    */
-                    //printf("kmerCount: %d\n", kmerCount);
-                    //printf("\n %s %s ANI: %d\n", fnaArrayMalloc[i], fnaArrayMalloc[j], finalANI);
-                    printf("   ('%s', '%s', '%f'), \n", basename(fnaArrayMalloc[i]), basename(fnaArrayMalloc[j]), hundredSimilarity);
+					printf("   ('");
+                    int g1_str = '/';
+                    int s1_str = '_';
+                    int f1_str = '.';
+                    char *ptr_g1 = NULL;
+                    char *ptr_s1 = NULL;
+                    char *ptr_f1 = NULL;
+                    int g1_start = 1;
+                    int s1_start = 1;
+                    int g2_start = 1;
+                    int s2_start = 1;
+                    ptr_g1 = strrchr(fnaArrayMalloc[i], g1_str);
+                    ptr_s1 = strrchr(fnaArrayMalloc[i], s1_str);
+                    ptr_f1 = strrchr(fnaArrayMalloc[i], f1_str);
+                    //Genus1
+                    while(ptr_g1 != ptr_s1) {
+                       if(g1_start == 1) {
+         				  ptr_g1++;
+                       	  g1_start = 0;
+                       }	
+                       printf("%c", *ptr_g1);
+                       ptr_g1++;
+                    }
+                    printf("','");
+                    //Species1
+                    while(ptr_s1 != ptr_f1) {
+                    	if(s1_start == 1) {
+                    		ptr_s1++;
+                    		s1_start = 0;
+                    	}
+                       	printf("%c", *ptr_s1);
+                       	ptr_s1++;
+                    }
+                    printf("','");
+                    int g2_str = '/';
+                    int s2_str = '_';
+                    int f2_str = '.';
+                    char *ptr_g2 = NULL;
+                    char *ptr_s2 = NULL;
+                    char *ptr_f2 = NULL;
+                    ptr_g2 = strrchr(fnaArrayMalloc[j], g2_str);
+                    ptr_s2 = strrchr(fnaArrayMalloc[j], s2_str);
+                    ptr_f2 = strrchr(fnaArrayMalloc[j], f2_str);
+                    //Genus2
+                    while(ptr_g2 != ptr_s2) {
+                       if(g2_start == 1) {
+                    		ptr_g2++;
+                    		g2_start = 0;
+                    	}
+                       printf("%c", *ptr_g2);
+                       ptr_g2++;
+                    }
+                    printf("','");
+                    //Species2 
+                    while(ptr_s2 != ptr_f2) {
+                    	if(s2_start == 1) {
+                    		ptr_s2++;
+                    		s2_start = 0;
+                    	}
+                    	printf("%c", *ptr_s2);
+                    	ptr_s2++;
+                    }
+                    printf("','%f'),", hundredSimilarity);
+                    printf("\n");
                     free(fna1Characters);
                     free(fna2Characters);
                     //return finalANI;
@@ -237,5 +294,6 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                 }*/ 
             }
         } 
-    }  
+    } 
+    //printf("('','','','','');\n\n");
 }
