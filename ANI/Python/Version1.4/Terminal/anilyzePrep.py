@@ -1,3 +1,4 @@
+#!/user/bin/python
 import ftplib#library used to download files using ftp
 import os#library used to execute system commands
 import time#library used to calculate total run time
@@ -9,7 +10,6 @@ import shutil#library used to use shell
 import Bio#library used to use seq to reverse concatinate the fna files
 from Bio.Seq import Seq#library used to reverse concatinate the fna files
 import getopt
-
 #Step 1: Download current fna.gz files from NCBI
 #This will download the complete bacterial files via ftp with file extensions of .fna.gz from refseq
 #Details and more information can be found at https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/#asmsumfiles
@@ -80,7 +80,7 @@ class DownloadFiles():
 #Parameter inputDirectoryParam: the directory containing all of the respecive .fna.gz files to decompress
 class Decompress():
   def run(self, inputDirectoryParam):
-  	print("Decompressing the files located in " + inputDirectoryParam)
+    print("Decompressing the files located in " + inputDirectoryParam)
     ext = ".fna.gz"#extension of .fna.gz
     for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#traverse the directory containing the files of type .fna.gz
       for file in files:#check all files
@@ -125,62 +125,53 @@ class DeleteFirstLineAndRename():
 #This will create a reverse compliment of the dna(fna) files location in the input directory parameter and concatinate it to the forward of the dna file into a new file located in the tree/outputDirectoryParam/complete/complete/ directory
 #Anilyze in C will use the reverse compliment to compute ANI
 #Parameter inputDirectoryParam is the location of all of the forward .fna files
-#Parameter outputDirectoryParam is the location of the forward and reverse complimented files that will be located at tree/outputDirectoryParam/complete/complete/
-class CreateReverseComplimentAndConcatinateToForward():
-  def run(self, inputDirectoryParam, outputDirectoryParam):
-    print("Creating reverse compliment directories")#print the progress of the program
-    os.system("mkdir " + outputDirectoryParam + "complete")#create initial directory to complete the forward and reverse compliment
-    os.system("mkdir " + outputDirectoryParam + "rc")#
+class CreateReverseComplimentAndAppendToForward():
+  def run(self, inputDirectoryParam):
+    print("Creating reverse compliment and forward")#print the progress of the program
     ext = ".fna"#extension of file to reverse compliment and add to forward
-    print("Creating reverse compliment directories")#print the progress of the program
     for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#iterate through the input directory
       for f in files:#check all the files
         if f.endswith(ext):#if the file ends with .fna
-          filePath = inputDirectoryParam + f#get the path of the .fna file
-          with open(filePath) as file:#open the file 
-            seqString = file.read()#get the contents of the .fna file
-            seq = Seq(seqString)#get the contents of the .fna and have Bio turn it into a sequence
-            newFile = open(outputDirectoryParam + "rc/" + f, "w")#create the reverse compliment file 
-            newFile.write(str(seq.reverse_complement()))#create and write the reverse compliment of the sequence given
-            newFile.close()#close the file
-    for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#iterate through the input directory param
-      for f in files:#check all of the files
-        if f.endswith(ext):#if the file ends with .fna
-          os.system("cat " + inputDirectoryParam + f + " " + outputDirectoryParam + "rc/" + f + " > " + outputDirectoryParam + "complete/" + f)#concatinate the reverse compliment to tree/complete/MOD
-    print("Finished creating the reverse compliment and concatinating to the forward of the respective .fna files")#print progress of the program
-
+          currentFile = open(str(inputDirectoryParam) + str(f), "r")#open the current file in read mode
+          seq = Seq(str(currentFile.read()))#read the file and create a sequence out of the string
+          currentFile.close()#close the file
+          currentFile = open(str(inputDirectoryParam) + str(f), "a")#open the current fule in append mode
+          currentFile.write(str(seq.reverse_complement()))#write the reverse compliment 
+          currentFile.close()#close the file
+    print("Create the reverse compliment and append to the forward")
+        
 #TODO: Create an in place algortihm and add U, N RNA to DNA conversions that are not A,C,G and T
 #Step 5: Convert the forward and reverse complimented file to a custom binary code
 #This will turn the forward fna file and the reverse complimented fna file into a custom binary code of A(00), C(01), G(10), T(11) 
 #Reformat and rename list of fna files
 #Parameter inputDirectoryParam: location of forward and reverse complimented concatinated fna files
-#Parameter outputDirectoryParam: location of the 
 class ConvertToBinary(): 
-  def run(self, inputDirectoryParam, outputDirectoryParam):
+  def run(self, inputDirectoryParam):
     print("Converting the .fna files located in " + inputDirectoryParam + " to binary")#print the progress of the program
     ext = ".fna"#extension of the files to be converted to binary
-    os.system("mkdir " + outputDirectoryParam + "binary")#output to tree/outputDirectory/binary/
     for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#iterate through tree/outputDirectory/binary/
       for file in files:#iterate through the files located in tree/outputDirectory/binary/
         if file.endswith(ext):#if file ends in .fna
-          with open(inputDirectoryParam + file) as currentFile:#open the current fna file
-            binaryString = ""#clear the binary string 
-            for line in currentFile:#for every line in the current file
-              for character in line:#for every character in the current line
-                if character == "A" or character == "a":#if the character is A or a then 
-                  binaryString += "00"#append 00
-                elif character == "C" or character == "c":#if the character is C then
-                  binaryString += "01"#append 01
-                elif character == "G" or character == "g":#if the charcter is g
-                  binaryString += "10"#append 10
-                elif character == "T" or character == "t":#if the character is t
-                  binaryString += "11"#append 11
-                else:#probably a new line and if it is not then throw an error
-                  if character != "\n":#if the remaining unknown character is not a newline then print an error
-                    #print("error: " + str(character) + " in " + str(fileMod) + " is not a newline, A, a, C, c, G, g, or T, t")
-            newFile = open(outputDirectoryParam + "/binary/" + file, "w")#open tree/outputDirectory/binary/ and print the converted binary to it
-            newFile.write(str(binaryString))#write the binary string
-            newFile.close()#close the file
+          currentFile = open(str(inputDirectoryParam) + str(file), "r")#if it does, then open the file to read. This should delete all lines
+          binaryString = ""#clear the binary string
+          lines = currentFile.readlines()#read all of the lines
+          currentFile.close()
+          currentFile = open(str(inputDirectoryParam) + str(file), "w")#open the file in write mode and write the lines that do not contain >           
+          for line in lines:#for every line in the current file
+            for character in line:#for every character in the current line
+              if character == "A" or character == "a":#if the character is A or a then 
+                binaryString += "00"#append 00
+              elif character == "C" or character == "c":#if the character is C then
+                binaryString += "01"#append 01
+              elif character == "G" or character == "g":#if the charcter is g
+                binaryString += "10"#append 10
+              elif character == "T" or character == "t":#if the character is t
+                binaryString += "11"#append 11
+              else:#probably a new line and if it is not then throw an error
+                if character != "\n":#if the remaining unknown character is not a newline then print an error
+                  print("error: " + str(character) + " in " + str(fileMod) + " is not a newline, A, a, C, c, G, g, or T, t")
+            currentFile.write(str(binaryString))#write the binary string
+            currentFile.close()#close the file
     print("Finished converting the .fna files to binary")#print the progress of the program
 
 #Step 6:
@@ -203,33 +194,36 @@ class DeleteLineInfo():
           currentFile.close()#close the file for the next file or completion
     print("Finished deletion of > lines from files located in " + str(inputDirectoryParam) + "complete")#print progress of the program
 
-#Step 7:
+#Optional Step 7:
 #This will delete all new lines in the program to be able to format it cleanly later. Anilyze C program needs a defined set number of characters with a newline character on each line
 #Parameter inputDirectoryParam: the directory of the files that contain the files to delete the new lines of
 #Parameter outputDirectoryParam: the output directory to otuput the new files that do not have new lines
 class DeleteNewLines():
   def run(self, inputDirectoryParam, outputDirectoryParam):
-    print("Deleting the new lines located in " + inputDirectoryParam + " and outputting to " + outputDirectoryParam)#print program progress
+    ext = ".fna"
+    print("Deleting the new lines located in " + inputDirectoryParam + " and outputting to " + outputDirectoryParam + "deletedNewLines/")#print program progress
     os.system("mkdir " + outputDirectoryParam + "deletedNewLines/")#
-    for root, dir, files in os.walk(inputDirectoryParam + "complete/MOD/", topdown=True):#
+    for root, dir, files in os.walk(inputDirectoryParam + "deletedNewLines/", topdown=True):#
       for f in files:#iterate through all of the files in the tree/output_directory/complete/mod
         if f.endswith(ext):#check if the file ends with .fna
           os.system("tr -d '\n' < " + ((os.path.join(root, f))) + " > " + outputDirectoryParam + "deletedNewLines/" + str(f))#remove all new lines and cat to /tree/output_directory/complete/mod2/
-    print("Finished deleting new lines")
+    print("Finished deleting new lines" + outputDirectoryParam + "deletedNewLines/")
 
 #Step 8:
 #This will modify the line length to 70. Anilyze in C needs a constant line length with new lines
-#Paramter inputDirectoryParam: the directory of the files that contain the files to modify the line length to seventy 
+#Paramter inputDirectoryParam: the directory of the files that contain the files to modify the line length to seventy
 #Parameter outputDirectoryParam: the directory of the modifed line length files
 class ModifyLineLengthToSeventy():
   def run(self, inputDirectoryParam, outputDirectoryParam):
-    print("Modifying the line lengths of the files located in " + inputDirectoryParam + " to 70")
+    ext = ".fna"
+    print("Modifying the line lengths of the files located in " + inputDirectoryParam + " to 70 " + outputDirectoryParam)
     for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#
       for f in files:#iterate through all of the files in the tree/output_directory/complete/mod
         if f.endswith(ext):#check if the file ends with .fna
-          os.system("grep -oE '.{1,70}' " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + "modifiedLineLengthToSeventy/" + str(f))#reformat the lines to lengths of 70 characters per line and cat to /tree/output/complete/mod2/
+          os.system("grep -oE '.{1,70}' " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + str(f))#reformat the lines to lengths of 70 characters per line and cat to /tree/output/complete/mod2/
     print("Modifying the line lengths of the files located in " + inputDirectoryParam + " to 70")
 #TODO: Complete this
+
 #Step 9:
 #This will delete the leftover files that were completed in progress
 #Parameter inputDirectoryParam: the directory containing all of the respective 
@@ -247,8 +241,6 @@ class DeletePreviousFiles():
     os.system("mkdir " + outputDirectoryParam + "complete/complete")
     os.system("mkdir " + outputDirectoryParam + "rc")
     '''
-
-
 #Step Other: This is used if user downloads fasta files from NCBI. This was made to download all 16S and split into individual files
 #Parameter inputFileParam: The fasta file to split
 #Parameter outputFileParam: The directory to output the .fna file to output to 
@@ -344,40 +336,41 @@ def main(argv):
       outputArg = arg
     else:
       print 'python anilyzePrep.py -h'
-  #print 'Input file is "', inputArg
-  #print 'Output file is "', outputArg
   #check if / at the end, if not there then add
-  #print("[:1]" + str(firstLineSplitListString1[:1]))
-  #print("[:-1]" + str(firstLineSplitListString1[:-1]))
-  #print("[1:]" + str(firstLineSplitListString1[1:]))
-  #print("[-1:]" + str(firstLineSplitListString1[-1:]))
   if os.path.isdir(inputArg) is False:
     print 'Invalid Directory'
     sys.exit(2)
   if os.path.isdir(outputArg) is False:
     print 'InvalidDirectory'
     sys.exit(2)
+  if(inputArg[-1:] != "/"):
+    inputArg = inputArg + "/"
+  if(outputArg[-1:] != "/"):
+    outputArg = outputArg + "/"
   if split_i is True:
      split = SplitFasta()
      split.run(inputArg, outputArg)
   if i is True:
-    downloadFiles = DownloadFiles():
-    decompress = Decompress():
-    deleteFirstLineAndRename  = DeleteFirstLineAndRename():
-    deleteLineInfo = DeleteLineInfo():
-    createReverseComplimentAndConcatinateToForward = CreateReverseComplimentAndConcatinateToForward():
-    convertToBinary = convertToBinary():
-    deleteNewLines = DeleteNewLines():
-    modifyLineLengthToSeventy = ModifyLineLengthToSeventy():
+    print 'Input file is "', inputArg
+    print 'Output file is "', outputArg
+    downloadFiles = DownloadFiles()
+    decompress = Decompress()
+    deleteFirstLineAndRename  = DeleteFirstLineAndRename()
+    deleteLineInfo = DeleteLineInfo()
+    createReverseComplimentAndAppendToForward = CreateReverseComplimentAndAppendToForward()
+    convertToBinary = ConvertToBinary()
+    deleteNewLines = DeleteNewLines()
+    modifyLineLengthToSeventy = ModifyLineLengthToSeventy()
     #splitFasta = SplitFasta():
-    downloadFiles.run(inputArg)
-    decompress.run(inputArg)
-    deleteFirstLineAndRename.run(inputArg)
-    deleteLineInfo.run(inputArg)
-    createReverseComplimentAndConcatinateToForward.run(inputArg, outputArg)
-    convertToBinary.run(inputArg, outputArg)
-    deleteNewLines.run(inputArg, outputArg)
-    modifyLineLengthToSeventy.run(inputArg, outputArg)
+
+    #downloadFiles.run(inputArg)
+    #decompress.run(inputArg)
+    #deleteFirstLineAndRename.run(inputArg)
+    #deleteLineInfo.run(inputArg)
+    #createReverseComplimentAndAppendToForward.run(inputArg)
+    #convertToBinary.run(inputArg)
+    #deleteNewLines.run(inputArg, outputArg)
+    #modifyLineLengthToSeventy.run(inputArg, outputArg)
     #splitFasta.run()
 #main  
 if __name__=='__main__':
