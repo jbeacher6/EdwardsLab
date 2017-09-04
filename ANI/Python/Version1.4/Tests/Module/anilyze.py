@@ -9,69 +9,74 @@ import shutil#library used to use shell
 import Bio#library used to use seq to reverse concatinate the fna files
 from Bio.Seq import Seq#library used to reverse concatinate the fna files
 import getopt
-
 #Step 1: Download current fna.gz files from NCBI
 #This will download the complete bacterial files via ftp with file extensions of .fna.gz from refseq
 #Details and more information can be found at https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/#asmsumfiles
 #Parameter inputDirectoryParam: the directory to download the .fna.gz files from refseq
-def downloadFiles(inputDirectoryParam):
-  print("DownloadAndDecompress() running")#print progress of program
-  currentDirectory = "/Users/jon/desktop/anilyzeDocumentation/"
+def downloadFiles(inputDirectoryParam, testParam):
+  print("downloadFiles running")#print progress of program
+  currentDirectoryPath = str(os.getcwd())
   email = 'jonbeacher@gmail.com'#email to login with refseq to 
-  prepDirectoryName = "prep/"#name of the directory that will contain ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
-  prepDirectoryName2 = "prep"#name of the directory that will contain ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
-  fnaFilesDirectoryName = "fnaFiles"#name of the directory that will contain all of the .fna.gz files from refseq
-  ftpDirPathsFilename = prepDirectoryName + "ftpDirPaths"#name of the file that will contain a list of all the file paths used to download using ftp
-  ftpDirPathsModFilename = prepDirectoryName + "ftpDirPathsMod"#name of the modded file that will contain a list of all the modded directory paths used to download using ftplib
-  ftpFilePathsFilename = prepDirectoryName + "ftpFilePaths"#name of the file that will contain a list of all the file paths used to download using ftplib
+  prepDirectoryName = "prep"#name of the directory that will contain ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
+  fnaFilesDirectoryName = "fnaFiles"
+  fnaFilesDirectoryPath = str(currentDirectoryPath) + "/" + str(fnaFilesDirectoryName) #name of the directory that will contain all of the .fna.gz files from refseq
+  prepDirectoryPath = str(currentDirectoryPath) + "/" + str(prepDirectoryName) + "/"
+  ftpDirPathsPathAndFilename = str(prepDirectoryPath) + "ftpDirPaths"#name of the file that will contain a list of all the file paths used to download using ftp
+  ftpDirPathsModPathAndFilename = str(prepDirectoryPath) + "ftpDirPathsMod"#name of the modded file that will contain a list of all the modded directory paths used to download using ftplib
+  ftpFilePathsPathAndFilename = str(prepDirectoryPath) + "ftpFilePaths"#name of the file that will contain a list of all the file paths used to download using ftplib
   mkdirCommandFnaFilesDirectory = "mkdir " + str(fnaFilesDirectoryName)#create directory of the .fna.gz files download location
-  mkdirCommandPrepFilesDirectory = "mkdir " + str(prepDirectoryName)#create directory of the ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
+  mkdirCommandPrepFilesDirectory = "mkdir " + str(prepDirectoryName) #create directory of the ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
   numDirs = 0#number of directories contained in the ftpDirPathsMod file
   numFiles = 0#number of directories contained in the ftpFilePaths file
   dirList = []#python list containing the name of the directories used to download using ftp from ftpDirPathsMod
   fileList = []#python list containing the name of the files used to download using ftp from ftoFilePaths
   print("Creating output directories")#print the progress of the program
-  if not os.path.exists(fnaFilesDirectoryName):#check if the directory that will contain all of the .fna.gz files exists
+  if not os.path.exists(fnaFilesDirectoryPath):#check if the directory that will contain all of the .fna.gz files exists
     os.system(mkdirCommandFnaFilesDirectory)#if it does not exist, create the directory
   else:#the directory already exists and this program will delete the contents of the directory
     os.system("rm -r " + fnaFilesDirectoryName)#remove the contents of the directory
     os.system(mkdirCommandFnaFilesDirectory)#create the directory that will contain all of the .fna.gz files
-  if not os.path.exists(prepDirectoryName2):#check if the directory that will contain the ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
+  if not os.path.exists(prepDirectoryPath):#check if the directory that will contain the ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
     os.system(mkdirCommandPrepFilesDirectory)#if the directory does not exist, then create it
   else:#the directory has already been created and will be deleted
-    os.system("rm -r " + prepDirectoryName2)#remove the directory
+    os.system("rm -r " + prepDirectoryPath)#remove the directory
     os.system(mkdirCommandPrepFilesDirectory)#create the directory
   ftp = ftplib.FTP('ftp.ncbi.nlm.nih.gov')#set up the ftp connection to NCBI
   ftp.login('anonymous', email)#login with username of anonymous and the email given earlier in the program
   #Awk commands and more details can be found at https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/#asmsumfiles
   ftp.cwd("/genomes/refseq/bacteria/")#change the ftp directory to the bacteria genome download locations in refseq
   print("Downloading assembly_summary.txt and executing awk commands")#print the progress of the program
-  os.system(ftp.retrbinary("RETR assembly_summary.txt", open(str(currentDirectory) + str(prepDirectoryName) + "assembly_summary.txt", 'wb').write))#download the assembly summary file
-  os.system("awk -F \"\t\" \'$12==\"Complete Genome\" && $11==\"latest\"{print $20}\' assembly_summary.txt > " + str(prepDirectoryName + "ftpdirpaths"))#download ftpdirpaths
-  os.system("awk \'BEGIN{FS=OFS=\"/\";filesuffix=\"genomic.fna.gz\"}{ftpdir=$0;asm=$10;file=asm\"_\"filesuffix;print file}\' " + prepDirectoryName + "ftpfilepaths" +  " > " + str(ftpfilepathsAwk))#download ftpfilepaths
+  os.system(ftp.retrbinary("RETR assembly_summary.txt", open(prepDirectoryPath + "assembly_summary.txt", 'wb').write))#download the assembly summary file
+  os.system("awk -F \"\t\" \'$12==\"Complete Genome\" && $11==\"latest\"{print $20}\' " + prepDirectoryPath + "assembly_summary.txt > " + prepDirectoryPath + "ftpdirpaths")#download ftpdirpaths
+  os.system("awk \'BEGIN{FS=OFS=\"/\";filesuffix=\"genomic.fna.gz\"}{ftpdir=$0;asm=$10;file=asm\"_\"filesuffix;print file}\' " + prepDirectoryPath + "ftpdirpaths" +  " > " + prepDirectoryPath + "ftpfilepaths") #download ftpfilepaths
   print("Downloading .fna.gz files")#print progress of the program
-  with open(ftpDirPathsModFilename, "w") as ftpDirPathMod:#clear the ftpDirPathMod file if it exists
+  with open(ftpDirPathsModPathAndFilename, "w") as ftpDirPathMod:#clear the ftpDirPathMod file if it exists
     ftpDirPathMod.write('')#write nothing to clear the file
-  with open(ftpDirPathsFilename, "rw+") as ftpDirPath:#open the ftpDirpaths file
+  with open(ftpDirPathsPathAndFilename, "rw+") as ftpDirPath:#open the ftpDirpaths file
     for dirPathStringLine in ftpDirPath:#iterate through all of the lines in the ftpDirpaths file
-      with open(ftpDirPathsModFilename, "a") as ftpDirPathMod:#open the newly created and cleared ftpDirpathsMod file in append mode 
+      with open(ftpDirPathsModPathAndFilename, "a") as ftpDirPathMod:#open the newly created and cleared ftpDirpathsMod file in append mode 
         ftpDirPathMod.write(str(dirPathStringLine[26:]))#delete the ftp:// url 
         ftpDirPathMod.close()#close the modded ftpDirpathsMod file
     ftpDirPath.close()#close the ftoDirpath file
-  with open(ftpDirPathsModFilename, "rw+") as ftpDirPath:#open the ftpdirpathsmod file that contains all of the modded directories to use in ftplib
+  with open(ftpDirPathsModPathAndFilename, "rw+") as ftpDirPath:#open the ftpdirpathsmod file that contains all of the modded directories to use in ftplib
     for dirPathStringLine in ftpDirPath:#iterate through all of the directories in ftpdirpathsmod
       dirList.append(str(dirPathStringLine.strip()))#add the dir name to dir list and clear the extra space to avoid garbage in strings(will get 500: become more creative error if not included)
       numDirs =+ 1#increment the number of directories in the ftpdirpathsmod file
-  with open(ftpFilePathsFilename, "rw+") as ftpFilePath:#open the ftpfilepaths file to get the ftp file paths for ftplib
+  with open(ftpFilePathsPathAndFilename, "rw+") as ftpFilePath:#open the ftpfilepaths file to get the ftp file paths for ftplib
     for filePathStringLine in ftpFilePath:#iterate through all the files
       fileList.append(str(filePathStringLine.strip()))#add the file name to file list and clear the extra space to avoid garbage in strings(will get 500: become more creative error if not included)
       numFiles =+1#increment the number of files found in the ftpfilepaths file
   if numDirs != numFiles:#if the number of files found do not equal the number of directories found in ftpfilepaths and ftpDirPathsMod nanme
     print(str("Error, numDirs != numFiles"))#print an error, something went wrong
-  for index, value in enumerate(dirList):#iterate through the list of directories
-    ftp.cwd(str(dirList[index]))#change the ftp directory location 
-    print(str(dirList[index]) + str(fileList[index]))#print file to be downloaded next
-    ftp.retrbinary("RETR " + fileList[index], open(str(fnaFilesDirectoryName + "/" + fileList[index]), 'wb').write)#download the files to tree/inputDirectory/fnaFiles
+  if testParam is True:
+    ftp.cwd(str(dirList[0]))#change the ftp directory location 
+    print(str(dirList[0]) + str(fileList[0]))#print file to be downloaded next
+    ftp.retrbinary("RETR " + fileList[0], open(str(fnaFilesDirectoryPath + "/" + fileList[0]), 'wb').write)#download the files to tree/inputDirectory/fnaFiles  
+  else:
+    for index, value in enumerate(dirList):#iterate through the list of directories
+      ftp.cwd(str(dirList[index]))#change the ftp directory location 
+      print(str(dirList[index]) + str(fileList[index]))#print file to be downloaded next
+      ftp.retrbinary("RETR " + fileList[index], open(str(fnaFilesDirectoryPath + "/" + fileList[index]), 'wb').write)#download the files to tree/inputDirectory/fnaFiles
   print("Download of files complete")#print progress of program
 
 #Step 2: Decompress the fna.gz files from NCBI
