@@ -219,10 +219,9 @@ def deletePreviousFiles(inputDirectoryParam):
 #Step Other: This is used if user downloads fasta files from NCBI. This was made to download all 16S and split into individual files
 #Parameter inputFileParam: The fasta file to split
 #Parameter outputFileParam: The directory to output the .fna file to output to 
-def splitFasta(inputFileParam, outputDirectoryParam):
+def splitFasta(inputFileParam):
   x = 0 # set the file count at 0, this is used for duplicate file names
   #"/Users/jon/desktop/split/split16S"
-  os.system("mkdir " + outputDirecotryParam)#create directory of output directory if it doesnt exist
   firstLine = True#boolean if it is the first line or not
   fnaName = ''#the name of the fna file
   prevFileName = ''#previous fna fname
@@ -237,18 +236,71 @@ def splitFasta(inputFileParam, outputDirectoryParam):
         if firstLine is True:#check if the current line is a new line with information or a dna sequence
           fnaList = line.strip().split()#get the line and split into a list
           fnaName = fnaList[1] + "_" + fnaList[2]#rename the file using the list
-          newFileName = outputDirectoryParam + str(fnaName) + ".fna"#
+          newFileName = inputDirectoryParam + str(fnaName) + ".fna"#
           if str(newFileName) == str(prevFileName):#do not delete duplicates
-            newFileName = outputDirectoryParam + str(fnaName) + str(x) + ".fna"#add number to the end
+            newFileName = inputDirectoryParam + str(fnaName) + str(x) + ".fna"#add number to the end
           else:#else it is not a duplicate
             prevFileName = newFileName#save previous
-            newFileName = outputDirectoryParam + str(fnaName) + ".fna"#output the split file to a new fna file
+            newFileName = inputDirectoryParam + str(fnaName) + ".fna"#output the split file to a new fna file
         else: #if not the first line
           with open(newFileName, 'a') as newFile:#append the line to the file
             newFile.write(line.strip())#write the line without space or garbage characters
         firstLine = False#not first line
   file.close()#close the current file
 #TODO: Check end of inputArg for /
+
+#Step Other: This is used if user downloads fasta files from NCBI. This was made to download all 16S and split into individual files
+#Parameter inputFileParam: The fasta file to split
+#Parameter outputFileParam: The directory to output the .fna file to output to 
+def splitFastaForComplete(inputDirectoryParam):
+  x = 0 # set the file count at 0, this is used for duplicate file names
+  #"/Users/jon/desktop/split/split16S"
+  firstLine = True#boolean if it is the first line or not
+  complete = False
+  fnaName = ''#the name of the fna file
+  prevFileName = ''#previous fna fname
+  newFileName = ''#the new file name to be saved as
+  #'/Users/jon/Desktop/split/sequence.fasta'
+  ext = ".fasta"#extension of the files to be converted to binary
+  #print(inputDirectoryParam)
+  for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#iterate through tree/outputDirectory/binary/
+    for currentFile in files:
+      if currentFile.endswith(ext):
+        #print(str(currentFile))
+        with open(inputDirectoryParam + currentFile) as file:#open the input fasta file
+          for line in file:#iterate through every line in the input fasta file
+            #print(line.strip())
+            if line.strip() == '':#clear the space characters
+              firstLine = True#the first line is current line
+              x += 1#increment count to be used for duplicates
+            else:#not first line
+              if firstLine is True:#check if the current line is a new line with information or a dna sequence
+                fnaList = line.strip().split()#get the line and split into a list
+                #print(fnaList)
+                for index, value in enumerate(fnaList):#iterate through the list of directories
+                  #print(str(fnaList[index]))
+                  if str(fnaList[index]) == "complete":
+                    #print("complete")
+                    fnaName = fnaList[1] + "_" + fnaList[2]#rename the file using the list
+                    newFileName = inputDirectoryParam + str(fnaName) + ".fna"#
+                    if str(newFileName) == str(prevFileName):#do not delete duplicates
+                      newFileName = inputDirectoryParam + str(fnaName) + "_" + str(x) + ".fna"#add number to the end
+                    else:#else it is not a duplicate
+                      prevFileName = newFileName#save previous
+                      newFileName = inputDirectoryParam + str(fnaName) + ".fna"#output the split file to a new fna file
+                    complete = True
+                  elif str(fnaList[index]) == "incomplete" or str(fnaList[index]) == "partial":
+                    #print("partial")
+                    complete = False
+              else: #if not the first line
+                print("else" + newFileName)
+                if complete is True:
+                  with open(newFileName, 'a') as newFile:#append the line to the file
+                    newFile.write(line.strip())#write the line without space or garbage characters
+              firstLine = False#not first line            
+    file.close()#close the current file
+#TODO: Check end of inputArg for /
+
 
 def printHelp():
   print '************************************************************************************************************************************'

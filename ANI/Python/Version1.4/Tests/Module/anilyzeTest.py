@@ -5,13 +5,10 @@ from anilyze import deleteLineInfo
 from anilyze import createReverseComplimentAndAppendToForward
 from anilyze import convertToBinary
 from anilyze import modifyLineLengthToSeventy
-import sys
-import getopt
+from anilyze import splitFastaForComplete
 import os
 import filecmp
 import ftplib#library used to download files using ftp
-import os#library used to execute system commands
-import sys#library used to execute system commands
 #test
 import unittest
 import md5
@@ -19,6 +16,7 @@ import hashlib
 import filecmp
 
 class AnilyzeTest(unittest.TestCase):
+  
   def createDirectory(self, directoryName):
     if not os.path.exists(directoryName):
       os.system("mkdir " + str(directoryName))
@@ -49,13 +47,12 @@ class AnilyzeTest(unittest.TestCase):
   def testDeleteFirstLineAndRename(self):
     self.setupTestDeleteFirstLineAndRename()
     currentDirectory = str(os.getcwd())
-    deleteFirstLineAndRename(currentDirectory + "/fnaFiles/")
+    deleteFirstLineAndRename(str(os.getcwd()) + "/fnaFiles/")
     #self.assertTrue(os.path.exists(currentDirectory + "/fnaFiles/Example_Bacterii.fna"))
-    self.assertTrue(filecmp.cmp(currentDirectory + "/fnaFiles/Example_Bacterii.fna", currentDirectory + "/correct/Example_Bacterii.fna", shallow=False))
+    self.assertTrue(filecmp.cmp(str(os.getcwd()) + "/fnaFiles/Example_Bacterii.fna", str(os.getcwd()) + "/correct/Example_Bacterii.fna", shallow=False))
   
   def setupDeleteLineInfo(self):
     self.createDirectory(str(os.getcwd()) + "/fnaFiles")
-    currentDirectory = os.getcwd()
     testFile = open(str(os.getcwd()) + "/fnaFiles/Example_Bacterii.fna", "w")
     testFile.write(">NC00 Example Bacterii\nAAAA\n>NC01 Example Bacterii\nCCCC\n>NC02 Example Bacterii\nGGGG\n>NC03 Example Bacterii\nTTTT\n")
     testFile.close()
@@ -66,9 +63,9 @@ class AnilyzeTest(unittest.TestCase):
 
   def testDeleteLineInfo(self):
     self.setupDeleteLineInfo()
-    currentDirectory = os.getcwd()
     deleteLineInfo(str(os.getcwd()) + "/fnaFiles/")
-    self.assertTrue(filecmp.cmp(currentDirectory + "/fnaFiles/Example_Bacterii.fna", currentDirectory + "/correct/Example_Bacterii.fna", shallow=False))
+    self.assertTrue(filecmp.cmp(str(os.getcwd()) + "/fnaFiles/Example_Bacterii.fna", str(os.getcwd()) + "/correct/Example_Bacterii.fna", shallow=False))
+
   def setupTestCreateReverseComplimentAndAppendToForward(self):
     self.createDirectory(str(os.getcwd()) + "/fnaFiles")
     testFile = open(str(os.getcwd()) + "/fnaFiles/testCreateReverseComplimentAndAppendToForward.fna", "w")
@@ -81,10 +78,8 @@ class AnilyzeTest(unittest.TestCase):
 
   def testCreateReverseComplimentAndAppendToForward(self):
     self.setupTestCreateReverseComplimentAndAppendToForward()
-    currentDirectory = os.getcwd()
     createReverseComplimentAndAppendToForward(str(os.getcwd()) + "/fnaFiles/")
-    self.assertTrue(filecmp.cmp(currentDirectory + "/fnaFiles/testCreateReverseComplimentAndAppendToForward.fna", currentDirectory + "/correct/testCreateReverseComplimentAndAppendToForward.fna", shallow=False))
-  #
+    self.assertTrue(filecmp.cmp(str(os.getcwd())+ "/fnaFiles/testCreateReverseComplimentAndAppendToForward.fna", str(os.getcwd()) + "/correct/testCreateReverseComplimentAndAppendToForward.fna", shallow=False))
   
   def setupTestConvertToBinary(self):
     self.createDirectory(str(os.getcwd()) + "/fnaFiles")
@@ -99,24 +94,42 @@ class AnilyzeTest(unittest.TestCase):
   def testConvertToBinary(self):
     self.setupTestConvertToBinary()
     currentDirectory = str(os.getcwd())
-    convertToBinary(currentDirectory + "/fnaFiles/")
-    self.assertTrue(filecmp.cmp(currentDirectory + "/fnaFiles/testConvertToBinary.fna", currentDirectory + "/correct/testConvertToBinary.fna", shallow=False))
+    convertToBinary(str(os.getcwd()) + "/fnaFiles/")
+    self.assertTrue(filecmp.cmp(str(os.getcwd())+ "/fnaFiles/testConvertToBinary.fna", str(os.getcwd()) + "/correct/testConvertToBinary.fna", shallow=False))
   
   def setupModifyLineLengthToSeventy(self):
-    self.createDirectory(str(os.getcwd()) + "/fnaFiles")
+    self.createDirectory(str(os.getcwd()) + "/fnaFiles/")
     testFile = open(str(os.getcwd()) + "/fnaFiles/testModifyLineLengthToSeventy.fna", "w")
-    testFile.write("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    testFile.write("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n")
     testFile.close()
-    self.createDirectory(str(os.getcwd()) + "/correct")
+    self.createDirectory(str(os.getcwd()) + "/correct/")
     correctFile = open(str(os.getcwd()) + "/correct/testModifyLineLengthToSeventy.fna", "w")
-    correctFile.write("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAA")
+    correctFile.write("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAA\n")
     correctFile.close()
 
   def testModifyLineLengthToSeventy(self):
-    currentDirectory = os.getcwd()
     self.setupModifyLineLengthToSeventy()
-    modifyLineLengthToSeventy(currentDirectory + "/fnaFiles/", currentDirectory)
-    self.assertTrue(filecmp.cmp(currentDirectory + "/fnaFiles/testModifyLineLengthToSeventy.fna", currentDirectory + "/correct/testModifyLineLengthToSeventy.fna", shallow=False))
+    modifyLineLengthToSeventy(str(os.getcwd())+ "/fnaFiles/", str(os.getcwd()) + "/fnaFiles/")
+    self.assertTrue(filecmp.cmp(str(os.getcwd()) + "/fnaFiles/seventy/testModifyLineLengthToSeventy.fna", str(os.getcwd()) + "/correct/testModifyLineLengthToSeventy.fna", shallow=False))
+  
+  def setupSplitFastaForComplete(self):
+    self.createDirectory(str(os.getcwd()) + "/testFiles/")
+    testFile = open(str(os.getcwd()) + "/testFiles/testSplitFastaForComplete.fasta", "w")
+    testFile.write(">NR00 Example Bacterium 16S partial sequence\nCCC\n\n>NR01 Example Bacterii 16S complete sequence\nGGG\n\n>NR02 Example Bacterii 16S complete sequence\nTTT\n")
+    testFile.close()
+    self.createDirectory(str(os.getcwd()) + "/correct/")
+    correctFile = open(str(os.getcwd()) + "/correct/Example_Bacterii.fna", "w")
+    correctFile.write("GGG")
+    correctFile.close()
+    correctFile2 = open(str(os.getcwd()) + "/correct/Example_Bacterii_2.fna", "w")
+    correctFile2.write("TTT")
+    correctFile2.close()
+
+  def testSplitFastaForComplete(self):
+    self.setupSplitFastaForComplete()
+    splitFastaForComplete(str(os.getcwd()) + "/testFiles/")
+    self.assertTrue(filecmp.cmp(str(os.getcwd()) + "/testFiles/Example_Bacterii.fna", str(os.getcwd()) + "/correct/Example_Bacterii.fna", shallow=False))
+    self.assertTrue(filecmp.cmp(str(os.getcwd()) + "/testFiles/Example_Bacterii_2.fna", str(os.getcwd()) + "/correct/Example_Bacterii_2.fna", shallow=False))    
 #main  
 if __name__=='__main__':
   unittest.main()
