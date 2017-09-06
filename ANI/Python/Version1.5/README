@@ -1,0 +1,10 @@
+Anilyze version 1.5
+
+A huerisitical program that calculates the average nucleotide index of various genomes
+
+This software was made to analyze whether or not certain bacterial taxonomic trees should be revised based off of the output of this program when run with all complete genomes or 16S RNA files from NCBI
+
+Prerequisite software: Python 2.7, Mac OSX or a Linux Operating System, GCC compiler, Biopython
+
+How to run software: 
+>python anilyze.py -i <Directory of .fna or .fasta files> <arg1> <arg2>
