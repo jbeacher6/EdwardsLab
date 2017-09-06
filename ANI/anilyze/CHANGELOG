@@ -1,0 +1,2 @@
+Anilyze version 1.5: Added def splitFastaForComplete(inputDirectoryParam):, tests and reformatted project structure
+Anilyze version 1.6: Added makefile, changed setup.py
