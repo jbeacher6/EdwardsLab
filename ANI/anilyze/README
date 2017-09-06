@@ -14,14 +14,14 @@ or
 >python setup.py -r
 >cd C
 >make
->anilyzeExeC <locationOfFilesRanFromSetup/correctlyFormatted> <kmerSize> <fileSimilarityThreshold> <An integer greater than or equal to the number of files found in ./directoryGiven/correctlyFormatted/>
+>anilyzeExeC <locationOfFilesRanFromSetup/correctlyFormatted> <kmerSize> <fileSimilarityThreshold> <An integer greater than or equal to the number of files found in ./locationOfFilesRanFromSetup/correctlyFormatted/>
 
 -d flag will automatically download and setup all complete genomes from NCBI location
 https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/
 -r flag will run setup on files located in ./inputFiles
 -i flag example: python anilyze.py -i /Users/user/desktop/fnaFilesLocation/
 Example Files: /path/Examplo_Bacterii.fna and /path/Examplus_Bacterium.fna
-Files from setup will be found in ./directoryGiven/correctlyFormatted/
+Files from setup will be found in ./locationOfFilesRanFromSetup/correctlyFormatted/
 
 Optional:
 >python tests.py
