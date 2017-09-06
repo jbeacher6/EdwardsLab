@@ -22,3 +22,7 @@ https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/
 -i flag example: python anilyze.py -i /Users/user/desktop/fnaFilesLocation/
 Example Files: /path/Examplo_Bacterii.fna and /path/Examplus_Bacterium.fna
 Files from setup will be found in ./directoryGiven/correctlyFormatted/
+
+Optional:
+>python tests.py
+
