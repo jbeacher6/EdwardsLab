@@ -14,7 +14,7 @@ or
 >python setup.py -r
 >cd C
 >make
->anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> <An integer greater than or equal to the number of files found in ./directoryGiven/correctlyFormatted/>
+>anilyzeExeC <locationOfFilesRanFromSetup/correctlyFormatted> <kmerSize> <fileSimilarityThreshold> <An integer greater than or equal to the number of files found in ./directoryGiven/correctlyFormatted/>
 
 -d flag will automatically download and setup all complete genomes from NCBI location
 https://www.ncbi.nlm.nih.gov/genome/doc/ftpfaq/
