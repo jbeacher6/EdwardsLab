@@ -28,7 +28,7 @@ def main(argv):
   inputFilesDefaultPathString = os.getcwd() + "/inputFiles/"
   parser = argparse.ArgumentParser()
   parser.add_argument('-e', '--executeWithDefaultInputDirectory', help='Execute with .fna or .fasta files in ./anilyze/inputFiles', action='store_true')
-  parser.add_argument('-a', '--autoDownloadNCBIComplete', help='Automatically download files and runs with NCBI complete bacteria DNA', action='store_true')
+  parser.add_argument('-a', '--autoDownloadNCBIComplete', help='Automatically download files and execute with NCBI complete bacteria DNA files', action='store_true')
   #parser.add_argument('-a', '--autoDownloadNCBIComplete', help='help')
   args = parser.parse_args() 
   if(args.executeWithDefaultInputDirectory):
