@@ -122,6 +122,29 @@ def deleteFirstLineAndRename(inputDirectoryParam):
           os.rename(str(inputDirectoryParam) + str(file), str(inputDirectoryParam) + str(newFileNameString) + ".fna")#rename the file
   print("Completed deleting the first lines and renaming the .fna files")
 
+#Step ?: Rename each file
+#This will rename the .fna files by deleting the [] or '' characters in the .fna files
+#This will override duplicate fna files
+#Parameter inputDirectoryParam: the directory containing all of the respective fna files to rename
+def modifyFileNames(inputDirectoryParam):
+  print("Modifying the names of the .fna files located in " + inputDirectoryParam)
+  ext = ".fna"#extension of files to delete the first line and rename
+  for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#traverse input directory tree to rename 
+    for file in files:
+      if file.endswith(ext):#check if fna file
+        with open(str(inputDirectoryParam) + str(file), "rw+") as currentFile:#open the file for reading and writing
+          firstLineSplitList = os.path.basename(file).strip()
+          print(firstLineSplitList)
+          firstLineSplitListString1 = str(firstLineSplitList)#Genus
+          #'Nostoc_azollae' and [Cellbrivio],etc. modifications
+          if(str(firstLineSplitListString1[:1]) == "[" or firstLineSplitListString1[:1] == "\'" or firstLineSplitListString1[:1] == "_"):#check first char
+            firstLineSplitListString1 = firstLineSplitListString1[1:]#if ] , _  or \, delete
+            if(str(firstLineSplitListString1[-1:]) == "]" or firstLineSplitListString1[-1:] == "\'" or firstLineSplitListString1[:1] == "_"):#check first char
+              firstLineSplitListString1 = firstLineSplitListString1[:-1]#if [ , _ or \, delete
+          newFileNameString = str(firstLineSplitListString1)
+          os.rename(str(inputDirectoryParam) + str(file), str(inputDirectoryParam) + str(newFileNameString) + ".fna")#rename the file
+  print("Completed modfying the .fna file names")
+
 #Step 4: Create the reverse compliment of the fna file and concatinate to the forward fna file
 #TODO: Modify to become in place
 #This will create a reverse compliment of the dna(fna) files location in the input directory parameter and concatinate it to the forward of the dna file into a new file located in the tree/outputDirectoryParam/complete/complete/ directory
@@ -201,14 +224,14 @@ def modifyLineLengthToSeventy(inputDirectoryParam, outputDirectoryParam):
   ext = ".fna"
   print("Modifying the line lengths of the files located in " + inputDirectoryParam + " to 70 >" + outputDirectoryParam + "correctlyFormatted/")
   os.system("mkdir " + outputDirectoryParam + "/correctlyFormatted")#
-  if not os.path.exists(directoryName):
-    os.system("mkdir " + str(directoryName))
+  if not os.path.exists(outputDirectoryParam):
+    os.system("mkdir " + str(outputDirectoryParam))
   for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#
     for f in files:#iterate through all of the files in the tree/output_directory/complete/mod
       if f.endswith(ext):#check if the file ends with .fna
         #print("grep -oE '.{1,70}' " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + "/Seventy" + str(f))
         os.system("grep -oE '.{1,70}' " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + "correctlyFormatted/" + str(f))#reformat the lines to lengths of 70 characters per line and cat to /tree/output/complete/mod2/
-  print("Modifying the line lengths of the files located in " + inputDirectoryParam + " to 70")
+  print("Completed modifying the line lengths of the files located in " + inputDirectoryParam + " to 70")
 
 #Step 8:
 #This will delete the leftover files that were completed in progress
@@ -293,45 +316,9 @@ def splitFastaForComplete(inputDirectoryParam):
                     #print("partial")
                     complete = False
               else: #if not the first line
-                print("else" + newFileName)
+                pass
                 if complete is True:
                   with open(newFileName, 'a') as newFile:#append the line to the file
                     newFile.write(line.strip())#write the line without space or garbage characters
               firstLine = False#not first line            
     file.close()#close the current file
-#TODO: Check end of inputArg for /
-
-
-def printHelp():
-  print '************************************************************************************************************************************'
-  print '                                                         Anilyze Prep Help                                                          '                                                                    
-  print '************************************************************************************************************************************'
-  print 'python anilyzePrep.py -i <Directory of .fna files> -o <Anilyze Prep Output Directory>'
-  print 'Example: python anilyzePrep.py -tree_i /Users/user/desktop/all.fna/ -tree_o /Users/user/desktop/AnilyzePrepOutputDirectory/'
-  print 'Example Files: /path/Examplo_Bacterii.fna and /path/Examplus_Bacterii.fna'
-  print ''
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '                                                     Prerequisite Instructions                                                      '
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '1. Download all fna files from ftp://ftp.ncbi.nlm.nih.gov/genomes/archive/old_refseq/Bacteria/all.fna.tar.gz to an empty directory' 
-  print '2. Unzip and delete the tar.gz file'
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '                                                        Software Requirements                                                       '
-  print '------------------------------------------------------------------------------------------------------------------------------------'   
-  print '1. Prerequisite Software: Python'
-  print '2. 2.7, Mac OSX or a Linux Operating System'
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '                                                        Hardware Requirements                                                       '
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '1. About 30 times the size of the downloaded tar.gz file(s)'
-  print '3. Program tested on 4GB of RAM'
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '                                                                Other                                                               '
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '1. Non-Binary fna files location after program completion: /outDirectoryGiven/complete/complete/'
-  print '2. Binary fna files location after program completion: /outDirectoryGiven/complete/binary/complete/'
-  print '3. Program will not work correctly if the output directory is in the same location as the last input directory(e.g. /all.fna/)'
-  print '------------------------------------------------------------------------------------------------------------------------------------'
-  print '************************************************************************************************************************************'
-  print '                                                                                                                                    '                                                                    
-  print '************************************************************************************************************************************'

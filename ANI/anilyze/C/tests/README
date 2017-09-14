@@ -11,7 +11,7 @@ gcc -g -Wall -c numberOfLinesLib.c
 gcc -g -Wall -c FNACharactersLib.c
 gcc -g -Wall -c binaryDistanceLib.c
 gcc -g -Wall anilyzeMain.c calculateANILib.o numberOfFilesLib.o numberOfLinesLib.o FNACharactersLib.o binaryDistanceLib.o -o anilyzeExeC
-bam-gs-1-mac8:tests jon$ ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 4 1
+bam-gs-1-mac8:tests jon$ ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 2 1
 INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, Percentage) 
 VALUES 
 
