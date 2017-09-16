@@ -16,7 +16,7 @@ const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
 const int nameLength = 300;
 
-void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST, const int amountOfFNAFilesBuffer) {
+void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST, const int ANIPERCENTAGETHRESHOLDCONST, const int amountOfFNAFilesBuffer) {
     int fnaFileCount = 0;
     DIR *fnaFilesDirectoryPointer;
     struct dirent *direntFnaDirectory;
@@ -162,6 +162,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     difference = finalANI/total;
                     similarity = 1 - difference;
                     hundredSimilarity = similarity*100;
+                    if(hundredSimilarity > ANIPERCENTAGETHRESHOLDCONST) {
                     printf("   ('");
                     int g1_str = '/';
                     int s1_str = '_';
@@ -222,6 +223,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     }
                     printf("','%f'),", hundredSimilarity);
                     printf("\n");
+                    }
                     free(fna1Characters);
                     free(fna2Characters);
                     finalANI = 0;

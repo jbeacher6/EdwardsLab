@@ -17,11 +17,12 @@ If one file has one million bytes but the other has two bytes, limiting this com
 than one to specify a one percent file similarity threshold. 
 */
 int main(int argc, char *argv[]) {//the main that will get the arguments detailed above
-    if(argc == 4) {//verify that the number of arguments is 4
+    if(argc == 5) {//verify that the number of arguments is 4
         const int kmerSizeConstantParam = atoi(argv[2])*2;//The program will multiply the kmer size by two to have a valid binary kmer size
         const int fileSimilarityThresholdConstantParam = atoi(argv[3]);//Get the percent size threshold
+        const int aniPercentageThresholdConstantParam = atoi(argv[4]);
         printf("INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, Percentage) \nVALUES \n");//SQL insert statement for futher analysis
-        calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
+        calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, aniPercentageThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
     }
     else {//the number of arguments was not correct and print a help section for valid input
         printf("%s", "Error, ./anilyzeExeC <User/path/locationOfFormattedFiles> <kmerSizeInteger> <filePercentSimilarityThresholdConstantInteger>");//display help
