@@ -143,7 +143,7 @@ def modifyFileNames(inputDirectoryParam):
             if(str(firstLineSplitListString1[-1:]) == "]" or firstLineSplitListString1[-1:] == "\'" or firstLineSplitListString1[:1] == "_"):#check first char
               firstLineSplitListString1 = firstLineSplitListString1[:-1]#if [ , _ or \, delete
           newFileNameString = str(firstLineSplitListString1)
-          os.rename(str(inputDirectoryParam) + str(file), str(inputDirectoryParam) + str(newFileNameString) + ".fna")#rename the file
+          os.rename(str(inputDirectoryParam) + str(file), str(inputDirectoryParam) + str(newFileNameString))#rename the file
   print("Completed modfying the .fna file names")
 
 #Step 4: Create the reverse compliment of the fna file and concatinate to the forward fna file
