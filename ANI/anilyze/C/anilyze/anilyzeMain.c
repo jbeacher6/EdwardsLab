@@ -25,8 +25,8 @@ int main(int argc, char *argv[]) {//the main that will get the arguments detaile
         calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, aniPercentageThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
     }
     else {//the number of arguments was not correct and print a help section for valid input
-        printf("%s", "Error, ./anilyzeExeC <User/path/locationOfFormattedFiles> <kmerSizeInteger> <filePercentSimilarityThresholdConstantInteger>");//display help
-        printf("%s", "Example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 4 1");//Sample execution 
+        printf("%s", "Error, ./anilyzeExeC <User/path/locationOfFormattedFiles> <kmerSizeInteger> <filePercentSimilarityThresholdConstantInteger> <aniPercentageThresholdConstantParam> ");//display help
+        printf("%s", "Example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 4 1 1");//Sample execution 
         printf("%s", "Please ./README for more information on formattedFiles");//display on how to format the files before running ./aniluzeExeC
         exit(EXIT_FAILURE);//quit the program
     }

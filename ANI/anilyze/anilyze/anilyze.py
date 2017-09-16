@@ -52,17 +52,17 @@ def downloadFiles(inputDirectoryParam, testParam):
   print("Downloading .fna.gz files")#print progress of the program
   with open(ftpDirPathsModPathAndFilename, "w") as ftpDirPathMod:#clear the ftpDirPathMod file if it exists
     ftpDirPathMod.write('')#write nothing to clear the file
-  with open(ftpDirPathsPathAndFilename, "rw+") as ftpDirPath:#open the ftpDirpaths file
+  with open(ftpDirPathsPathAndFilename, "r") as ftpDirPath:#open the ftpDirpaths file
     for dirPathStringLine in ftpDirPath:#iterate through all of the lines in the ftpDirpaths file
-      with open(ftpDirPathsModPathAndFilename, "a") as ftpDirPathMod:#open the newly created and cleared ftpDirpathsMod file in append mode 
+      with open(ftpDirPathsModPathAndFilename, "w") as ftpDirPathMod:#open the newly created and cleared ftpDirpathsMod file in append mode 
         ftpDirPathMod.write(str(dirPathStringLine[26:]))#delete the ftp:// url 
         ftpDirPathMod.close()#close the modded ftpDirpathsMod file
     ftpDirPath.close()#close the ftoDirpath file
-  with open(ftpDirPathsModPathAndFilename, "rw+") as ftpDirPath:#open the ftpdirpathsmod file that contains all of the modded directories to use in ftplib
+  with open(ftpDirPathsModPathAndFilename, "r") as ftpDirPath:#open the ftpdirpathsmod file that contains all of the modded directories to use in ftplib
     for dirPathStringLine in ftpDirPath:#iterate through all of the directories in ftpdirpathsmod
       dirList.append(str(dirPathStringLine.strip()))#add the dir name to dir list and clear the extra space to avoid garbage in strings(will get 500: become more creative error if not included)
       numDirs =+ 1#increment the number of directories in the ftpdirpathsmod file
-  with open(ftpFilePathsPathAndFilename, "rw+") as ftpFilePath:#open the ftpfilepaths file to get the ftp file paths for ftplib
+  with open(ftpFilePathsPathAndFilename, "r") as ftpFilePath:#open the ftpfilepaths file to get the ftp file paths for ftplib
     for filePathStringLine in ftpFilePath:#iterate through all the files
       fileList.append(str(filePathStringLine.strip()))#add the file name to file list and clear the extra space to avoid garbage in strings(will get 500: become more creative error if not included)
       numFiles =+1#increment the number of files found in the ftpfilepaths file
@@ -77,6 +77,7 @@ def downloadFiles(inputDirectoryParam, testParam):
       ftp.cwd(str(dirList[index]))#change the ftp directory location 
       print(str(dirList[index]) + str(fileList[index]))#print file to be downloaded next
       ftp.retrbinary("RETR " + fileList[index], open(str(fnaFilesDirectoryPath + "/" + fileList[index]), 'wb').write)#download the files to tree/inputDirectory/fnaFiles
+  ftp.close()
   print("Download of files complete")#print progress of program
 
 #Step 2: Decompress the fna.gz files from NCBI
@@ -102,7 +103,7 @@ def deleteFirstLineAndRename(inputDirectoryParam):
   for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#traverse input directory tree to rename 
     for file in files:
       if file.endswith(ext):#check if fna file
-        with open(str(inputDirectoryParam) + str(file), "rw+") as currentFile:#open the file for reading and writing
+        with open(str(inputDirectoryParam) + str(file), "r") as currentFile:#open the file for reading and writing
           firstLineSplitList = currentFile.readline().strip().split()#split the first line that contains the genus and species inforamtion to rename the fna file
           #print(firstLineSplitList)
           firstLineSplitListString1 = str(firstLineSplitList[1])#Genus

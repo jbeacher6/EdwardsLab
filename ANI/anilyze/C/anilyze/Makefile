@@ -1,5 +1,6 @@
 CC = gcc
-CFLAGS  = -g -Wall
+CFLAGS = -g -Wall
+CFLAGS = -std=c99 
 
 default: anilyzeExeC
 
