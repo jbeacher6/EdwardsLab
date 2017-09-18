@@ -54,7 +54,7 @@ def downloadFiles(inputDirectoryParam, testParam):
     ftpDirPathMod.write('')#write nothing to clear the file
   with open(ftpDirPathsPathAndFilename, "r") as ftpDirPath:#open the ftpDirpaths file
     for dirPathStringLine in ftpDirPath:#iterate through all of the lines in the ftpDirpaths file
-      with open(ftpDirPathsModPathAndFilename, "w") as ftpDirPathMod:#open the newly created and cleared ftpDirpathsMod file in append mode 
+      with open(ftpDirPathsModPathAndFilename, "a") as ftpDirPathMod:#open the newly created and cleared ftpDirpathsMod file in append mode 
         ftpDirPathMod.write(str(dirPathStringLine[26:]))#delete the ftp:// url 
         ftpDirPathMod.close()#close the modded ftpDirpathsMod file
     ftpDirPath.close()#close the ftoDirpath file
@@ -133,7 +133,7 @@ def modifyFileNames(inputDirectoryParam):
   for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#traverse input directory tree to rename 
     for file in files:
       if file.endswith(ext):#check if fna file
-        with open(str(inputDirectoryParam) + str(file), "rw+") as currentFile:#open the file for reading and writing
+        with open(str(inputDirectoryParam) + str(file), "r") as currentFile:#open the file for reading and writing
           firstLineSplitList = os.path.basename(file).strip()
           print(firstLineSplitList)
           firstLineSplitListString1 = str(firstLineSplitList)#Genus

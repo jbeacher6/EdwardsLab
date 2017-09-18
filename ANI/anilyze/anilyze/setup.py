@@ -13,29 +13,43 @@ import os
 import unittest
 import argparse
 
-def runSetup(inputDirectoryParam):
+def runSetupA(inputDirectoryParam):
   decompress(inputDirectoryParam)
   deleteFirstLineAndRename(inputDirectoryParam)
   deleteLineInfo(inputDirectoryParam)
+  modifyFileNames(inputDirectoryParam)
+  createReverseComplimentAndAppendToForward(inputDirectoryParam)
+  convertToBinary(inputDirectoryParam)
+  modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
+
+def runSetupE(inputDirectoryParam):
+  deleteLineInfo(inputDirectoryParam)
+  createReverseComplimentAndAppendToForward(inputDirectoryParam)
+  convertToBinary(inputDirectoryParam)
+  modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
+
+def runSetupF(inputDirectoryParam):
   splitFastaForComplete(inputDirectoryParam)
   modifyFileNames(inputDirectoryParam)
   createReverseComplimentAndAppendToForward(inputDirectoryParam)
   convertToBinary(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
-  numberOfFiles = 0
 
 def main(argv):
   inputFilesDefaultPathString = os.getcwd() + "/inputFiles/"
   parser = argparse.ArgumentParser()
-  parser.add_argument('-e', '--executeWithDefaultInputDirectory', help='Execute with .fna or .fasta files in ./anilyze/inputFiles', action='store_true')
+  parser.add_argument('-e', '--executeWithDefaultInputDirectory', help='Execute with .fna files in ./anilyze/inputFiles', action='store_true')
   parser.add_argument('-a', '--autoDownloadNCBIComplete', help='Automatically download files and execute with NCBI complete bacteria DNA files', action='store_true')
+  parser.add_argument('-f', '--executeWithDefaultInputDirectoryFasta', help='Execute with .fasta files in ./anilyze/inputFiles', action='store_true')
   #parser.add_argument('-a', '--autoDownloadNCBIComplete', help='help')
   args = parser.parse_args() 
   if(args.executeWithDefaultInputDirectory):
-    runSetup(inputFilesDefaultPathString)
+    runSetupE(inputFilesDefaultPathString)
   if(args.autoDownloadNCBIComplete):
-    downloadFiles(inputFilesDefaultPathString)
-    runSetup(inputFilesDefaultPathString)
+    downloadFiles(inputFilesDefaultPathString, False)
+    runSetupA(inputFilesDefaultPathString)
+  if(args.executeWithDefaultInputDirectoryFasta):
+    runSetupE(inputFilesDefaultPathString)
 #main  
 if __name__=='__main__':
   main(sys.argv[1:])

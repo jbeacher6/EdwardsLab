@@ -40,12 +40,12 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
             int strlenString = strlen(direntFnaDirectory->d_name);
             if( strlenString > minimumFnaFileStringLength) {
                 memcpy(checkIfFNA, &direntFnaDirectory->d_name[strlenString - fnaFilesDirectoryStringLengthMinusOne], fnaFilesDirectoryStringLengthMinusOne);
-                if (strcmp(checkIfFNA,fnaString) == 0) {
+                //if (strcmp(checkIfFNA,fnaString) == 0) {
                     int strlenString2 = strlen(fnaFilesDirectory);
                     memcpy(fnaArrayMalloc[fnaFileCount], fnaFilesDirectory, strlenString2);
                     memcpy(fnaArrayMalloc[fnaFileCount] + strlenString2, &direntFnaDirectory->d_name, strlenString);
                     fnaFileCount++;
-                }
+                //}
             }
         }
         closedir(fnaFilesDirectoryPointer);
