@@ -3,7 +3,22 @@ import sys
 import getopt
 import os
 import unittest
+import filecmp
 
+class AnilyzeTest(unittest.TestCase):
+  def setUp(self):
+
+  def test(self):
+    #turn data into file
+    #throw file into program
+    #assert both files are equal via self.assertTrue(filecmp.cmp(filePath1,filePath2))
+
+#main  
+if __name__=='__main__':
+  unittest.main()
+
+
+'''
 def main(argv):
   inputArg = ''
   outputArg = ''
@@ -54,7 +69,4 @@ def main(argv):
     createReverseComplimentAndAppendToForward(inputArg)
     convertToBinary(inputArg)
     modifyLineLengthToSeventy(inputArg, outputArg)
-
-#main  
-if __name__=='__main__':
-  main(sys.argv[1:])
+'''

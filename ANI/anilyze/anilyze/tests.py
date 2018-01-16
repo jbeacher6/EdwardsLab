@@ -22,7 +22,7 @@ class AnilyzeTest(unittest.TestCase):
     else:
       os.system("rm -r " + str(directoryName))
       os.system("mkdir " + str(directoryName))
-  '''
+  
   def testDownloadFiles(self):
     downloadFiles(os.getcwd() + "/fnaFiles/", True)
     self.assertEqual(str(hashlib.md5(open(str(os.getcwd() + "/fnaFiles/GCF_000010525.1_ASM1052v1_genomic.fna.gz"), "rb").read()).hexdigest()), "417d852fbfbb7a37e23fd6d6d4f9d60d")
@@ -32,7 +32,7 @@ class AnilyzeTest(unittest.TestCase):
     decompress(str(os.getcwd()) + "/fnaFiles/")
     string = str(os.getcwd()+ "/fnaFiles/GCF_000010525.1_ASM1052v1_genomic.fna") 
     self.assertTrue(os.path.isfile(string))
-  '''
+  
   def setupTestDeleteFirstLineAndRename(self):
     self.createDirectory(str(os.getcwd()) + "/fnaFiles")
     testFile = open(str(os.getcwd()) + "/fnaFiles/testDeleteFirstLineAndRename.fna", "w")
