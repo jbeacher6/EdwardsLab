@@ -1,0 +1,16 @@
+Python prep
+------------
+How to run software from README directory:
+>cd python
+>python setup.py -h
+usage: setup.py [-h] [-e] [-a]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -e, --executeWithDefaultInputDirectory
+                        Execute with .fna or .fasta files in
+                        ./anilyze/inputFiles
+  -a, --autoDownloadNCBIComplete
+                        Automatically download files and execute with NCBI
+                        complete bacteria DNA files
+
