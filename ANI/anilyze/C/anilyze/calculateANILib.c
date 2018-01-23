@@ -8,20 +8,219 @@
 #include <libgen.h>
 #include "FNACharactersLib.h"
 #include "numberOfLinesLib.h"
-#include "binaryDistanceLib.h"
 #include "calculateANILib.h"
+#include "uthash.h"
 const int LINESIZE = 70;
 const int fnaFilesDirectoryStringLengthBuffer = 302;
 const int minimumFnaFileStringLength = 4;
+const int fnaNameBufferSize = 4;
 const int nameLength = 300;
+const int KMERLENGTHCONST = 30;
 
-void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST, const int ANIPERCENTAGETHRESHOLDCONST, const int amountOfFNAFilesBuffer) {
+//-------------------------------------------------------------------
+
+struct f1_struct {
+    int num;                   
+    char kmer[KMERLENGTHCONST];
+    UT_hash_handle hh;         
+};
+
+struct f1_struct *kmers_f1 = NULL;
+
+void add_f1(char *kmer) {
+    struct f1_struct *s;
+    HASH_FIND_STR(kmers_f1, kmer, s);  
+    if (s == NULL) {
+      s = (struct f1_struct*)malloc(sizeof(struct f1_struct));
+      s->num = 0;
+      strncpy(s->kmer, kmer, KMERLENGTHCONST);
+      HASH_ADD_STR(kmers_f1, kmer, s);  
+    }
+    s->num++;
+    strcpy(s->kmer, kmer);
+}
+
+void print_f1() {
+    struct f1_struct *s;
+    printf("\nf1\n");
+    for(s=kmers_f1; s != NULL; s=(struct f1_struct*)(s->hh.next)) {
+        printf("%s : %d\n", s->kmer, s->num);
+    }
+}
+
+void delete_free_f1() {
+  struct f1_struct *s, *tmp;
+  HASH_ITER(hh, kmers_f1, s, tmp) {
+    HASH_DEL(kmers_f1, s);  
+    free(s);               
+  }
+}
+
+//-------------------------------------------------------------------
+
+struct f2_struct {
+    int num;                 
+    char kmer[KMERLENGTHCONST];
+    UT_hash_handle hh;       
+};
+
+struct f2_struct *kmers_f2 = NULL;
+
+void add_f2(char *kmer) {
+    struct f2_struct *s;
+    HASH_FIND_STR(kmers_f2, kmer, s);  
+    if (s == NULL) {
+      s = (struct f2_struct*)malloc(sizeof(struct f2_struct));
+      s->num = 0;
+      strncpy(s->kmer, kmer, KMERLENGTHCONST);
+      HASH_ADD_STR(kmers_f2, kmer, s);  
+    }
+    s->num++;
+    strcpy(s->kmer, kmer);
+}
+
+void print_f2() {
+    struct f2_struct *s;
+    printf("\nf2\n");
+    for(s=kmers_f2; s != NULL; s=(struct f2_struct*)(s->hh.next)) {
+        printf("%s : %d\n", s->kmer, s->num);
+    }
+}
+
+void delete_free_f2() {
+  struct f2_struct *s, *tmp;
+  HASH_ITER(hh, kmers_f2, s, tmp) {
+    HASH_DEL(kmers_f2, s);
+    free(s);               
+  }
+}
+
+//-------------------------------------------------------------------
+
+struct rc2_struct {
+    int num;                   
+    char kmer[KMERLENGTHCONST];
+    UT_hash_handle hh;
+};
+
+struct rc2_struct *kmers_rc2 = NULL;
+
+void add_rc2(char *kmer) {
+    struct rc2_struct *s;
+    HASH_FIND_STR(kmers_rc2, kmer, s);  
+    if (s == NULL) {
+      s = (struct rc2_struct*)malloc(sizeof(struct rc2_struct));
+      s->num = 0;
+      strncpy(s->kmer, kmer, KMERLENGTHCONST);
+      HASH_ADD_STR(kmers_rc2, kmer, s);  
+    }
+    s->num++;
+    strcpy(s->kmer, kmer);
+}
+
+void print_rc2() {
+    struct rc2_struct *s;
+    printf("\nrc2\n");
+    for(s=kmers_rc2; s != NULL; s=(struct rc2_struct*)(s->hh.next)) {
+        printf("%s : %d\n", s->kmer, s->num);
+    }
+}
+
+void delete_free_rc2() {
+  struct rc2_struct *s, *tmp;
+  HASH_ITER(hh, kmers_rc2, s, tmp) {
+    HASH_DEL(kmers_rc2, s);
+    free(s);
+  }
+}
+
+//-------------------------------------------------------------------
+
+double f1_query_f2_rc2(const int KMERSIZE) {
+    int ANI = 0;
+    int worstANI = 0;
+    struct f1_struct *f1;
+    struct f2_struct *f2;
+    struct rc2_struct *rc2;
+    rc2 = kmers_rc2;
+    for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
+      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
+      if(f2 == NULL) {
+        ANI = ANI + KMERSIZE*(f1->num);
+        worstANI = worstANI + KMERSIZE*(f1->num);
+      } else {
+        worstANI = worstANI + KMERSIZE*(f1->num);
+      }
+      HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
+      if(rc2 == NULL) {
+        ANI = ANI + KMERSIZE*(f1->num);
+        worstANI = worstANI + KMERSIZE*(f1->num);
+      } else {
+        worstANI = worstANI + KMERSIZE*(f1->num);
+      }
+  }
+  delete_free_f1();
+  delete_free_f2();
+  delete_free_rc2();
+  return 100 - (((double) ANI / ((double) worstANI * (double) ANI))*100);
+}
+
+double f1_query_f2_rc2_print(const int KMERSIZE) {
+    int ANI = 0;
+    int worstANI = 0;
+    struct f1_struct *f1;
+    struct f2_struct *f2;
+    struct rc2_struct *rc2;
+    rc2 = kmers_rc2;
+    for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
+      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
+      if(f2 == NULL) {
+        printf("%s not in f2\n", f1->kmer);
+        ANI = ANI + KMERSIZE*(f1->num);
+        worstANI = worstANI + KMERSIZE*(f1->num);
+        printf("ANI: %d\n", ANI);
+        printf("worstANI: %d\n", worstANI);
+        printf("\n");  
+      } else {
+        printf("%s in f2\n", f1->kmer);
+        worstANI = worstANI + KMERSIZE*(f1->num);
+        printf("ANI: %d\n", ANI);
+        printf("worstANI: %d\n", worstANI);
+        printf("\n");  
+      }
+      HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
+      if(rc2 == NULL) {
+        printf("%s not in rc2\n", f1->kmer);
+        ANI = ANI + KMERSIZE*(f1->num);
+        worstANI = worstANI + KMERSIZE*(f1->num);
+        printf("ANI: %d\n", ANI);
+        printf("worstANI: %d\n", worstANI);
+        printf("\n"); 
+      } else {
+        printf("%s in f2\n", f1->kmer);
+        worstANI = worstANI + KMERSIZE*(f1->num);
+        printf("ANI: %d\n", ANI);
+        printf("worstANI: %d\n", worstANI);
+        printf("\n"); 
+      }
+  }
+  printf("ANI: %d\n", ANI);
+  printf("worstANI: %d\n", worstANI);
+  delete_free_f1();
+  delete_free_f2();
+  delete_free_rc2();
+  return 100 - (((double) ANI / ((double) worstANI * (double) ANI))*100);
+}
+
+//-------------------------------------------------------------------
+
+void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int FILESIMILARITYCONST, const int amountOfFNAFilesBuffer) {
     int fnaFileCount = 0;
     DIR *fnaFilesDirectoryPointer;
     struct dirent *direntFnaDirectory;
     fnaFilesDirectoryPointer = opendir(fnaFilesDirectory);
-    char checkIfFNA[4];
-    char fnaString[4] = "fna";
+    char checkIfFNA[fnaNameBufferSize];
+    char fnaString[fnaNameBufferSize] = "fna";
     int fnaFilesDirectoryStringLengthMinusOne = minimumFnaFileStringLength - 1;
     char** fnaArrayMalloc = (char**) malloc(amountOfFNAFilesBuffer*sizeof(char*));
     if(fnaArrayMalloc == NULL) { 
@@ -40,12 +239,12 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
             int strlenString = strlen(direntFnaDirectory->d_name);
             if( strlenString > minimumFnaFileStringLength) {
                 memcpy(checkIfFNA, &direntFnaDirectory->d_name[strlenString - fnaFilesDirectoryStringLengthMinusOne], fnaFilesDirectoryStringLengthMinusOne);
-                //if (strcmp(checkIfFNA,fnaString) == 0) {
+                if (strcmp(checkIfFNA,fnaString) == 0) {
                     int strlenString2 = strlen(fnaFilesDirectory);
                     memcpy(fnaArrayMalloc[fnaFileCount], fnaFilesDirectory, strlenString2);
                     memcpy(fnaArrayMalloc[fnaFileCount] + strlenString2, &direntFnaDirectory->d_name, strlenString);
                     fnaFileCount++;
-                //}
+                }
             }
         }
         closedir(fnaFilesDirectoryPointer);
@@ -55,6 +254,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
     }
     const int kmerSizeMod = KMERSIZE+1;
     int finalANI = 0;
+    printf("\n%s\n\n", "finalANI = 0");
     char *ptr = NULL, *ptr2 = NULL, *ptr3 = NULL;
     char kmerArr[kmerSizeMod], kmerArr2[kmerSizeMod], kmerArr3[kmerSizeMod];
       for(int i = 0; i < fnaFileCount; i++) {
@@ -95,10 +295,6 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     int chr = 0;
                     int chr2 = 0;
                     int chr3 = 0;
-                    int kmerCount = 0;
-                    double total = 0; 
-                    double difference = 0;
-                    double similarity = 0;
                     double hundredSimilarity = 0;
                     if(file1Size < file2Size) {
                         minimumLines = numLines1;
@@ -107,15 +303,12 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                         minimumLines = numLines2;
                         maximumLines = numLines1;
                     }
-                    int numCharsMin2 = numCharsMin;// - minimumLines;// - \n
-                    int numCharsMax2 = numCharsMax;// - maximumLines;// - \n
-                    int numKmersMax = (numCharsMax2) - KMERSIZE;
+                    int numCharsMin2 = numCharsMin;
                     ptr=fna1Characters[0];
                     ptr2=fna2Characters[0];
                     int numCharsMinHalf = numCharsMin2 / 2;
                     ptr3=fna2Characters[0];
                     for(int i = 0; i < numCharsMinHalf; i++) {
-                        if(i%2 == 0) {//account for binary
                             for(int j = 0; j < kmerSizeMod; j++) {
                                 if(j == 0) {
                                     chr = i;
@@ -147,22 +340,12 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                             if(strlen(kmerArr3) != KMERSIZE) {
                                 break;
                             }
-                            int kmerANI = binaryDistance(kmerArr, kmerArr2, KMERSIZE);
-                            int kmerANI2 = binaryDistance(kmerArr, kmerArr3, KMERSIZE);
-                            if(kmerANI < kmerANI2) {
-                                finalANI = finalANI + kmerANI;
-                            } else {
-                                finalANI = finalANI + kmerANI2;
-                            }
-                            kmerCount++;
-                            }
+                            add_f1(kmerArr);
+                            add_f2(kmerArr2);
+                            add_rc2(kmerArr3);
                         }
-                    total = (numKmersMax/2)*(KMERSIZE/2);//account for binary
-                    difference = finalANI/total;
-                    similarity = 1 - difference;
-                    hundredSimilarity = similarity*100;
-                    if((int) hundredSimilarity > ANIPERCENTAGETHRESHOLDCONST) {
-                    printf("   ('");
+                        f1_query_f2_rc2(KMERSIZE);
+                        //f1_query_f2_rc2_print(KMERSIZE);
                     int g1_str = '/';
                     int s1_str = '_';
                     int f1_str = '.';
@@ -222,12 +405,10 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     }
                     printf("','%f'),", hundredSimilarity);
                     printf("\n");
-                    }
                     free(fna1Characters);
                     free(fna2Characters);
-                    finalANI = 0;
                 }
             }
         } 
-    } //printf("('','','','','');\n\n");
+    }
 }
