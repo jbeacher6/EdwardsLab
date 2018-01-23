@@ -7,7 +7,7 @@ Prerequisite software: Python 2.7, Mac OSX or a Linux Operating System, GCC comp
 Python prep
 ------------
 How to run software from README directory:
->cd anilyze
+>cd python
 >python setup.py -h
 usage: setup.py [-h] [-e] [-a]
 
@@ -25,3 +25,7 @@ Main program in C
 >cd C
 >make
 >anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> 
+
+kmerSize: 1-100 and fileSimilarityThreshold: 1-100
+
+example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 2 1
