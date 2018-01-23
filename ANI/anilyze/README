@@ -24,4 +24,4 @@ Main program in C
 ------------------
 >cd C
 >make
->anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> <An integer greater than or equal to the number of files found in ./directoryGiven/correctlyFormatted/>
+>anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> 
