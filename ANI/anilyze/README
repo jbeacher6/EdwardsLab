@@ -1,11 +1,11 @@
-Anilyze version 1.5
+Anilyze version 1.6
 
 A huerisitical program that calculates the average nucleotide index of various genomes
 
-This software was made to analyze whether or not certain bacterial taxonomic trees should be revised based off of the output of this program when run with all complete genomes or 16S RNA files from NCBI
-
 Prerequisite software: Python 2.7, Mac OSX or a Linux Operating System, GCC compiler, Biopython
 
+Python prep
+------------
 How to run software from README directory:
 >cd anilyze
 >python setup.py -h
@@ -19,6 +19,9 @@ optional arguments:
   -a, --autoDownloadNCBIComplete
                         Automatically download files and execute with NCBI
                         complete bacteria DNA files
+
+Main program in C
+------------------
 >cd C
 >make
 >anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> <An integer greater than or equal to the number of files found in ./directoryGiven/correctlyFormatted/>
