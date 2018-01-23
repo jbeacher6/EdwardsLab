@@ -1,0 +1,15 @@
+Main program in C
+------------------
+>cd C
+>make
+>anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> 
+
+kmerSize: 1-100 and fileSimilarityThreshold: 1-100
+
+example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 2 1
+
+Requirements
+-------------
+gcc compiler
+c99 or higher
+Linux or MacOS 
