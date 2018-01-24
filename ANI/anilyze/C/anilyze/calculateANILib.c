@@ -10,12 +10,20 @@
 #include "numberOfLinesLib.h"
 #include "calculateANILib.h"
 #include "uthash.h"
-const int LINESIZE = 70;
-const int fnaFilesDirectoryStringLengthBuffer = 302;
-const int minimumFnaFileStringLength = 4;
-const int fnaNameBufferSize = 4;
-const int nameLength = 300;
-const int KMERLENGTHCONST = 60;
+
+#define KMERLENGTHCONST 60
+#define fnaNameBufferSize 4
+#define LINESIZE 70
+#define fnaFilesDirectoryStringLengthBuffer 302
+#define minimumFnaFileStringLength 4
+#define nameLength 300
+
+//const int LINESIZE = 70;
+//const int fnaFilesDirectoryStringLengthBuffer = 302;
+//const int minimumFnaFileStringLength = 4;
+//const int fnaNameBufferSize = 4;
+//const int nameLength = 300;
+//const int KMERLENGTHCONST = 60;
 
 //-------------------------------------------------------------------
 
@@ -258,7 +266,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
       for(int i = 0; i < fnaFileCount; i++) {
         for(int j = i; j < fnaFileCount; j++) {
             double fileSimilarityDouble = 0;
-            int fileSimilarityInt = 0;
+            //int fileSimilarityInt = 0;
             float fileSimilarityFloatDecimal = 0;
             int numCharsMin = 0;
             int numCharsMax = 0;
@@ -280,7 +288,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
             if(strcmp(fnaArrayMalloc[i], fnaArrayMalloc[j]) != 0) {
                 fileSimilarityFloatDecimal = ((float) numCharsMin / (float) numCharsMax);
                 fileSimilarityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
-                fileSimilarityInt = (int) fileSimilarityDouble;
+                //fileSimilarityInt = (int) fileSimilarityDouble;
                 if(fileSimilarityFloatDecimal*100 > FILESIMILARITYCONST) {
                     int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
                     int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
