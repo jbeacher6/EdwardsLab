@@ -15,7 +15,7 @@ const int fnaFilesDirectoryStringLengthBuffer = 302;
 const int minimumFnaFileStringLength = 4;
 const int fnaNameBufferSize = 4;
 const int nameLength = 300;
-const int KMERLENGTHCONST = 30;
+const int KMERLENGTHCONST = 60;
 
 //-------------------------------------------------------------------
 
@@ -253,8 +253,6 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
         exit(EXIT_FAILURE);
     }
     const int kmerSizeMod = KMERSIZE+1;
-    int finalANI = 0;
-    printf("\n%s\n\n", "finalANI = 0");
     char *ptr = NULL, *ptr2 = NULL, *ptr3 = NULL;
     char kmerArr[kmerSizeMod], kmerArr2[kmerSizeMod], kmerArr3[kmerSizeMod];
       for(int i = 0; i < fnaFileCount; i++) {
@@ -359,6 +357,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     ptr_g1 = strrchr(fnaArrayMalloc[i], g1_str);
                     ptr_s1 = strrchr(fnaArrayMalloc[i], s1_str);
                     ptr_f1 = strrchr(fnaArrayMalloc[i], f1_str);
+                    printf("(");
                     while(ptr_g1 != ptr_s1) {
                        if(g1_start == 1) {
                           ptr_g1++;
@@ -403,7 +402,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                         printf("%c", *ptr_s2);
                         ptr_s2++;
                     }
-                    printf("','%f'),", hundredSimilarity);
+                    printf("','%d','%f'),", KMERSIZE, hundredSimilarity);
                     printf("\n");
                     free(fna1Characters);
                     free(fna2Characters);

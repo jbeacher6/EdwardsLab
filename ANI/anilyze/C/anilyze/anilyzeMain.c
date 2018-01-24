@@ -11,21 +11,30 @@ The first argument is ./anilyzeExceC , the second is the location of the formatt
 the file similarity threshold. 
 Argument 1: <User/path/locationOfFormattedFiles> : This is the formatted files from the Anilyze python program. 
 The reference is ./README (not ./C/tests/README) for <User/path/locationOfFormattedFiles> for the setup files scripts.
-Argument 2: <kmerSizeInteger> : This is the kmer integer size to input into the program. For example, a k-mer isze of ten would be 10.
-Argument 3: <filePercentSimilarityThresholdConstantInteger> : This is the percent similarity threshold to limit file comparisons. 
+Argument 2: <kmerSizeMinInteger> : This is the kmer integer size to input into the program. For example, a k-mer isze of ten would be 10.
+Max Size: 50
+Argument 3: <kmerSizeMinInteger> : This is the kmer integer size to input into the program. For example, a k-mer isze of ten would be 10.
+Min Size: 2
+This program will iterate kmersize from Argument2 to Argument3
+
+Optioanl Argument: <filePercentSimilarityThresholdConstantInteger> : This is the percent similarity threshold to limit file comparisons. 
 If one file has one million bytes but the other has two bytes, limiting this comparison can be done by inputting a valid integer greater 
 than one to specify a one percent file similarity threshold. 
 */
 int main(int argc, char *argv[]) {//the main that will get the arguments detailed above
     if(argc == 4) {//verify that the number of arguments is 4
-        const int kmerSizeConstantParam = atoi(argv[2]);//The program will multiply the kmer size by two to have a valid binary kmer size
-        const int fileSimilarityThresholdConstantParam = atoi(argv[3]);//Get the percent size threshold
-        printf("INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, Percentage) \nVALUES \n");//SQL insert statement for futher analysis
-        calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
+        const int kmerSizeMinParam = atoi(argv[2]);//The program will multiply the kmer size by two to have a valid binary kmer size
+        const int kmerSizeMaxParam = atoi(argv[3]);//Get the percent size threshold
+        const int fileSimilarityThresholdConstantParam = 0;
+        printf("INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, kmerSize, Percentage) \nVALUES \n");//SQL insert statement for futher analysis
+        //calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
+        for(int i = kmerSizeMinParam; i <= kmerSizeMaxParam; i++) {
+            calculateANI(argv[1], i, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
+        }
     }
     else {//the number of arguments was not correct and print a help section for valid input
         printf("%s", "Error, ./anilyzeExeC <User/path/locationOfFormattedFiles> <kmerSizeInteger> <filePercentSimilarityThresholdConstantInteger>");//display help
-        printf("%s", "Example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 4 1");//Sample execution 
+        printf("%s", "Example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 2 4");//Sample execution 
         printf("%s", "Please ./README for more information on formattedFiles");//display on how to format the files before running ./aniluzeExeC
         exit(EXIT_FAILURE);//quit the program
     }
