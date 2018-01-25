@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <string.h>
 #include <libgen.h>
+#include <math.h>
 #include "FNACharactersLib.h"
 #include "numberOfLinesLib.h"
 #include "calculateANILib.h"
@@ -17,13 +18,6 @@
 #define fnaFilesDirectoryStringLengthBuffer 302
 #define minimumFnaFileStringLength 4
 #define nameLength 300
-
-//const int LINESIZE = 70;
-//const int fnaFilesDirectoryStringLengthBuffer = 302;
-//const int minimumFnaFileStringLength = 4;
-//const int fnaNameBufferSize = 4;
-//const int nameLength = 300;
-//const int KMERLENGTHCONST = 60;
 
 //-------------------------------------------------------------------
 
@@ -39,7 +33,7 @@ void add_f1(char *kmer) {
     struct f1_struct *s;
     HASH_FIND_STR(kmers_f1, kmer, s);  
     if (s == NULL) {
-      s = (struct f1_struct*)malloc(sizeof(struct f1_struct));
+      s = (struct f1_struct*)calloc(1, sizeof(struct f1_struct));
       s->num = 0;
       strncpy(s->kmer, kmer, KMERLENGTHCONST);
       HASH_ADD_STR(kmers_f1, kmer, s);  
@@ -78,7 +72,7 @@ void add_f2(char *kmer) {
     struct f2_struct *s;
     HASH_FIND_STR(kmers_f2, kmer, s);  
     if (s == NULL) {
-      s = (struct f2_struct*)malloc(sizeof(struct f2_struct));
+      s = (struct f2_struct*)calloc(1, sizeof(struct f2_struct));
       s->num = 0;
       strncpy(s->kmer, kmer, KMERLENGTHCONST);
       HASH_ADD_STR(kmers_f2, kmer, s);  
@@ -117,7 +111,7 @@ void add_rc2(char *kmer) {
     struct rc2_struct *s;
     HASH_FIND_STR(kmers_rc2, kmer, s);  
     if (s == NULL) {
-      s = (struct rc2_struct*)malloc(sizeof(struct rc2_struct));
+      s = (struct rc2_struct*)calloc(1, sizeof(struct rc2_struct));
       s->num = 0;
       strncpy(s->kmer, kmer, KMERLENGTHCONST);
       HASH_ADD_STR(kmers_rc2, kmer, s);  
@@ -230,15 +224,15 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
     char checkIfFNA[fnaNameBufferSize];
     char fnaString[fnaNameBufferSize] = "fna";
     int fnaFilesDirectoryStringLengthMinusOne = minimumFnaFileStringLength - 1;
-    char** fnaArrayMalloc = (char**) malloc(amountOfFNAFilesBuffer*sizeof(char*));
-    if(fnaArrayMalloc == NULL) { 
-        printf("%s", "Error: kmersArrayMalloc\n");
+    char** fnaArrayCalloc = (char**) calloc(amountOfFNAFilesBuffer, sizeof(char*));
+    if(fnaArrayCalloc == NULL) { 
+        printf("%s", "Error: kmersArrayCalloc\n");
         exit(EXIT_FAILURE);
     }
     for(int i = 0; i < amountOfFNAFilesBuffer; i++) {
-        fnaArrayMalloc[i] = (char *) malloc(sizeof(char)*nameLength);
-        if(fnaArrayMalloc[i] == NULL) { 
-            printf("%s", "Error: kmersArrayMalloc\n");
+        fnaArrayCalloc[i] = (char *) calloc(nameLength, sizeof(char));
+        if(fnaArrayCalloc[i] == NULL) { 
+            printf("%s", "Error: kmersArrayCalloc\n");
             exit(EXIT_FAILURE);
         }
    }
@@ -249,8 +243,8 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                 memcpy(checkIfFNA, &direntFnaDirectory->d_name[strlenString - fnaFilesDirectoryStringLengthMinusOne], fnaFilesDirectoryStringLengthMinusOne);
                 //if (strcmp(checkIfFNA,fnaString) == 0) {
                     int strlenString2 = strlen(fnaFilesDirectory);
-                    memcpy(fnaArrayMalloc[fnaFileCount], fnaFilesDirectory, strlenString2);
-                    memcpy(fnaArrayMalloc[fnaFileCount] + strlenString2, &direntFnaDirectory->d_name, strlenString);
+                    memcpy(fnaArrayCalloc[fnaFileCount], fnaFilesDirectory, strlenString2);
+                    memcpy(fnaArrayCalloc[fnaFileCount] + strlenString2, &direntFnaDirectory->d_name, strlenString);
                     fnaFileCount++;
                 //}
             }
@@ -274,8 +268,8 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
             long long file2Size = 0;
             struct stat sa;
             struct stat sb;
-            stat(fnaArrayMalloc[i], &sa);
-            stat(fnaArrayMalloc[j], &sb);
+            stat(fnaArrayCalloc[i], &sa);
+            stat(fnaArrayCalloc[j], &sb);
             file1Size = sa.st_size;
             file2Size = sb.st_size;
             if(file1Size < file2Size) {
@@ -285,17 +279,17 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                 numCharsMin = file2Size;
                 numCharsMax = file1Size;
             }
-            if(strcmp(fnaArrayMalloc[i], fnaArrayMalloc[j]) != 0) {
+            if(strcmp(fnaArrayCalloc[i], fnaArrayCalloc[j]) != 0) {
                 fileSimilarityFloatDecimal = ((float) numCharsMin / (float) numCharsMax);
                 fileSimilarityDouble = ((double) numCharsMin / (double) numCharsMax )*100;
                 //fileSimilarityInt = (int) fileSimilarityDouble;
                 if(fileSimilarityFloatDecimal*100 > FILESIMILARITYCONST) {
-                    int numLines1 = numberOfLines(LINESIZE, fnaArrayMalloc[i]);
-                    int numLines2 = numberOfLines(LINESIZE, fnaArrayMalloc[j]);
+                    int numLines1 = numberOfLines(LINESIZE, fnaArrayCalloc[i]);
+                    int numLines2 = numberOfLines(LINESIZE, fnaArrayCalloc[j]);
                     char **fna1Characters = NULL;
-                    fna1Characters = fnaCharactersOf(fnaArrayMalloc[i], LINESIZE, numLines1);
+                    fna1Characters = fnaCharactersOf(fnaArrayCalloc[i], LINESIZE, numLines1);
                     char **fna2Characters = NULL;
-                    fna2Characters = fnaCharactersOf(fnaArrayMalloc[j], LINESIZE, numLines2);
+                    fna2Characters = fnaCharactersOf(fnaArrayCalloc[j], LINESIZE, numLines2);
                     int minimumLines = 0;
                     int maximumLines = 0;
                     int chr = 0;
@@ -362,10 +356,10 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     int s1_start = 1;
                     int g2_start = 1;
                     int s2_start = 1;
-                    ptr_g1 = strrchr(fnaArrayMalloc[i], g1_str);
-                    ptr_s1 = strrchr(fnaArrayMalloc[i], s1_str);
-                    ptr_f1 = strrchr(fnaArrayMalloc[i], f1_str);
-                    printf("(");
+                    ptr_g1 = strrchr(fnaArrayCalloc[i], g1_str);
+                    ptr_s1 = strrchr(fnaArrayCalloc[i], s1_str);
+                    ptr_f1 = strrchr(fnaArrayCalloc[i], f1_str);
+                    printf("('");
                     while(ptr_g1 != ptr_s1) {
                        if(g1_start == 1) {
                           ptr_g1++;
@@ -390,9 +384,9 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                     char *ptr_g2 = NULL;
                     char *ptr_s2 = NULL;
                     char *ptr_f2 = NULL;
-                    ptr_g2 = strrchr(fnaArrayMalloc[j], g2_str);
-                    ptr_s2 = strrchr(fnaArrayMalloc[j], s2_str);
-                    ptr_f2 = strrchr(fnaArrayMalloc[j], f2_str);
+                    ptr_g2 = strrchr(fnaArrayCalloc[j], g2_str);
+                    ptr_s2 = strrchr(fnaArrayCalloc[j], s2_str);
+                    ptr_f2 = strrchr(fnaArrayCalloc[j], f2_str);
                     while(ptr_g2 != ptr_s2) {
                        if(g2_start == 1) {
                             ptr_g2++;
@@ -410,12 +404,23 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                         printf("%c", *ptr_s2);
                         ptr_s2++;
                     }
-                    printf("','%d','%f'),", KMERSIZE, hundredSimilarity);
+                    printf("','%d','%d'),", KMERSIZE, (int) round(hundredSimilarity));
                     printf("\n");
-                    free(fna1Characters);
-                    free(fna2Characters);
+
+    		for(int a = 0; a < numLines1; a++) {
+        		free(fna1Characters[a]);
                 }
+		    free(fna1Characters);
+
+    		for(int b = 0; b < numLines2; b++) {
+        		free(fna2Characters[b]);
+                }
+            free(fna2Characters);
+		      }
             }
         } 
     }
+	free(kmers_f1);
+	free(kmers_f2);
+	free(kmers_rc2);
 }

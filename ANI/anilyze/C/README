@@ -1,15 +1,40 @@
-Main program in C
-------------------
->cd C
->make
->anilyzeExeC <locationOfFilesRanFromSetup> <kmerSize> <fileSimilarityThreshold> 
+./anilyze/C/tests/sampleTestFiles/
+Example_cat.fna: 010011001110
+Example_tag.fna: 110010011100
 
-kmerSize: 1-100 and fileSimilarityThreshold: 1-100
+mac8:tests jon$ make clean
+rm -f anilyzeExeC *.o *~
+bam-gs-1-mac8:tests jon$ make
+gcc -g -Wall -c calculateANILib.c
+gcc -g -Wall -c numberOfFilesLib.c
+gcc -g -Wall -c numberOfLinesLib.c
+gcc -g -Wall -c FNACharactersLib.c
+gcc -g -Wall -c binaryDistanceLib.c
+gcc -g -Wall anilyzeMain.c calculateANILib.o numberOfFilesLib.o numberOfLinesLib.o FNACharactersLib.o binaryDistanceLib.o -o anilyzeExeC
+bam-gs-1-mac8:tests jon$ ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 2 1
+INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, Percentage) 
+VALUES 
 
-example: ./anilyzeExeC /Users/jon/desktop/anilyze/C/tests/sampleTestFiles/ 2 1
+finalANI = 0
 
-Requirements
--------------
-gcc compiler
-c99 or higher
-Linux or MacOS 
+kmerArr:  0100
+kmerArr2: 1100
+kmerANI: 1
+kmerArr:  0100
+kmerArr3: 0111
+kmerANI2: 1
+kmerANI2 is minimum, adding to finalANI
+kmerArr:  0011
+kmerArr2: 0010
+kmerANI: 1
+kmerArr:  0011
+kmerArr3: 1100
+kmerANI2: 2
+kmerANI is minumum, adding to finalANI
+
+finalANI: 2
+finalANI:2/total:8.000000 = : 0.250000
+similarity:0.750000 = 1 - difference:0.250000
+hundredSimilarity:75.000000 = similarity:0.750000*100
+
+   ('Example','cat','Example','tag','75.000000'),

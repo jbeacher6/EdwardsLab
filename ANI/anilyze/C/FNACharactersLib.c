@@ -13,32 +13,32 @@ char** fnaCharactersOf(const char* fnaFileNameAndLocation, const int LINESIZE, c
         printf("%s", "Error(FNACharactersLib): fnaPointer is null\n");//print error 
         exit(EXIT_FAILURE);//exit program
     }
-    char **fnaArrayMalloc = (char**) malloc(numberOfLines*sizeof(char*));
-    if(fnaArrayMalloc == NULL) {//If the malloc operation was not successful
-        printf("%s", "Error(FNACharactersLib: fnaArrayMalloc\n");//print error
+    char **fnaArrayCalloc = (char**) calloc(numberOfLines, sizeof(char*));
+    if(fnaArrayCalloc == NULL) {//If the calloc operation was not successful
+        printf("%s", "Error(FNACharactersLib: fnaArrayCalloc\n");//print error
         exit(EXIT_FAILURE);//exit the program
     }
     for(int i = 0; i < numberOfLines; i++) {//for the number of lines in the program
-        fnaArrayMalloc[i] = (char *) malloc(sizeof(char)*LINESIZE);//allocate space
+        fnaArrayCalloc[i] = (char *) calloc(LINESIZE, sizeof(char));//allocate space
    }
    int j = 0;//start
     while (fgets(singleCharLine, DATABUFFER, fnaPointer) != NULL) {
-        memcpy(fnaArrayMalloc[j], &singleCharLine, LINESIZE);//copy
+        memcpy(fnaArrayCalloc[j], &singleCharLine, LINESIZE);//copy
         j++;//next line
     }
     fclose(fnaPointer);//close the pointer to the file
-    char **fnaCharMalloc = (char**) malloc(sizeof(char));//allocate space
-    if(fnaCharMalloc == NULL) {//if allocating space was not successful 
-        printf("%s", "Error(FNACharactersLib): fnaCharMalloc\n");//throw error
+    char **fnaCharCalloc = (char**) calloc(1, sizeof(char));//allocate space
+    if(fnaCharCalloc == NULL) {//if allocating space was not successful 
+        printf("%s", "Error(FNACharactersLib): fnaCharCalloc\n");//throw error
         exit(EXIT_FAILURE);//exit the program
     }
-    fnaCharMalloc[0] = (char *) malloc(sizeof(char)*LINESIZE*numberOfLines);//allocate space
+    fnaCharCalloc[0] = (char *) calloc(LINESIZE*numberOfLines, sizeof(char));//allocate space
     for (int k = 0; k < numberOfLines; k++) {//for number of lines
-        memcpy(fnaCharMalloc[0] + LINESIZE*k, fnaArrayMalloc[k], LINESIZE);//copy
+        memcpy(fnaCharCalloc[0] + LINESIZE*k, fnaArrayCalloc[k], LINESIZE);//copy
     }
     for(int l = 0; l < numberOfLines; l++) {//for number of lines
-        free(fnaArrayMalloc[l]);//free the array
+        free(fnaArrayCalloc[l]);//free the array
     }
-    free(fnaArrayMalloc);//free the remaining pointers
-    return (char**) fnaCharMalloc;//return the characters in the .fna file
+    free(fnaArrayCalloc);//free the remaining pointers
+    return (char**) fnaCharCalloc;//return the characters in the .fna file
 }
