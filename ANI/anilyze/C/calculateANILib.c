@@ -164,7 +164,36 @@ double f1_query_f2_rc2(const int KMERSIZE) {
   delete_free_f1();
   delete_free_f2();
   delete_free_rc2();
-  return 100 - (((double) ANI / ((double) worstANI * (double) ANI))*100);
+  return 100 - ((double) ANI/ (double) worstANI)*100;
+}
+
+double f1_query_f2_rc2_single(const int KMERSIZE) {
+    int ANI = 0;
+    int worstANI = 0;
+    struct f1_struct *f1;
+    struct f2_struct *f2;
+    struct rc2_struct *rc2;
+    rc2 = kmers_rc2;
+    for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
+      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
+      if(f2 == NULL) {
+        ANI = ANI + KMERSIZE*(f1->num);
+        worstANI = worstANI + KMERSIZE;
+      } else {
+        worstANI = worstANI + KMERSIZE;
+      }
+      HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
+      if(rc2 == NULL) {
+        ANI = ANI + KMERSIZE;
+        worstANI = worstANI + KMERSIZE;
+      } else {
+        worstANI = worstANI + KMERSIZE;
+      }
+  }
+  delete_free_f1();
+  delete_free_f2();
+  delete_free_rc2();
+  return 100 - ((double) ANI/ (double) worstANI)*100;
 }
 
 double f1_query_f2_rc2_print(const int KMERSIZE) {
@@ -208,10 +237,12 @@ double f1_query_f2_rc2_print(const int KMERSIZE) {
   }
   printf("ANI: %d\n", ANI);
   printf("worstANI: %d\n", worstANI);
+  printf("Actual ANI: %f\n", 100 - ((double) ANI/ (double) worstANI)*100);
+  //printf("FinalANI: %f\n", 100 - (((double) ANI / ((double) worstANI * (double) ANI))*100));
   delete_free_f1();
   delete_free_f2();
   delete_free_rc2();
-  return 100 - (((double) ANI / ((double) worstANI * (double) ANI))*100);
+  return 100 - ((double) ANI/ (double) worstANI)*100;
 }
 
 //-------------------------------------------------------------------
@@ -344,7 +375,7 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                             add_f2(kmerArr2);
                             add_rc2(kmerArr3);
                         }
-                        f1_query_f2_rc2(KMERSIZE);
+                        //f1_query_f2_rc2(KMERSIZE);
                         //f1_query_f2_rc2_print(KMERSIZE);
                     int g1_str = '/';
                     int s1_str = '_';
@@ -404,23 +435,21 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                         printf("%c", *ptr_s2);
                         ptr_s2++;
                     }
-                    printf("','%d','%d'),", KMERSIZE, (int) round(hundredSimilarity));
+                    printf("','%d','%f'),", KMERSIZE, f1_query_f2_rc2(KMERSIZE));
                     printf("\n");
-
-    		for(int a = 0; a < numLines1; a++) {
-        		free(fna1Characters[a]);
-                }
+    		free(fna1Characters[0]);
 		    free(fna1Characters);
-
-    		for(int b = 0; b < numLines2; b++) {
-        		free(fna2Characters[b]);
-                }
+    		free(fna2Characters[0]);
             free(fna2Characters);
+            free(kmers_f1);
+            free(kmers_f2);
+            free(kmers_rc2);
 		      }
             }
         } 
     }
-	free(kmers_f1);
-	free(kmers_f2);
-	free(kmers_rc2);
+    for(int i = 0; i < amountOfFNAFilesBuffer; i++) {
+        free(fnaArrayCalloc[i]);
+        }
+    free(fnaArrayCalloc);
 }

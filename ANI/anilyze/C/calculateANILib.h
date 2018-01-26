@@ -25,4 +25,6 @@ double f1_query_f2_rc2_print(const int KMERSIZE);
 
 double f1_query_f2_rc2(const int KMERSIZE);
 
+double f1_query_f2_rc2_single(const int KMERSIZE);
+
 #endif
