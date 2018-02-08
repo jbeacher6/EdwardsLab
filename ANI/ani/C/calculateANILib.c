@@ -12,31 +12,52 @@
 #include "calculateANILib.h"
 #include "uthash.h"
 
-#define KMERLENGTHCONST 60
+#define KMERLENGTHCONST 100
 #define fnaNameBufferSize 4
 #define LINESIZE 70
 #define fnaFilesDirectoryStringLengthBuffer 302
 #define minimumFnaFileStringLength 4
 #define nameLength 300
 
+
+//------------------------------------------------------------------
+
+int editDistance(const char* S, const char* T, int kmerLength) {
+    int matrix[kmerLength + 1][kmerLength + 1];
+    for (int i = 0; i <= kmerLength; i++) {
+        matrix[i][0] = i;
+        matrix[0][i] = i;
+    }
+    for (int j = 1; j <= kmerLength; j++) {
+        for (int k = 1; k <= kmerLength; k++) {
+            if (S[j-1] == T[k-1]) 
+                matrix[j][k] = matrix[j-1][k-1];
+            else 
+                matrix[j][k] = (matrix[j][k-1] + 1) > (matrix[j-1][k] + 1) ? ((matrix[j-1][k-1] + 1) > (matrix[j-1][k] + 1) ? (matrix[j-1][k] + 1) : (matrix[j-1][k-1] + 1)) : ((matrix[j-1][k-1] + 1) > (matrix[j][k-1] + 1) ? (matrix[j][k-1] + 1) : (matrix[j-1][k-1] + 1));
+        }
+    }
+    return matrix[kmerLength][kmerLength];
+}
+
 //-------------------------------------------------------------------
 
 struct f1_struct {
-    int num;                   
+    int num;                    /* key */
     char kmer[KMERLENGTHCONST];
-    UT_hash_handle hh;         
+    UT_hash_handle hh;         /* makes this structure hashable */
 };
 
 struct f1_struct *kmers_f1 = NULL;
 
 void add_f1(char *kmer) {
     struct f1_struct *s;
-    HASH_FIND_STR(kmers_f1, kmer, s);  
+    HASH_FIND_STR(kmers_f1, kmer, s);  /* id already in the hash? */
     if (s == NULL) {
-      s = (struct f1_struct*)calloc(1, sizeof(struct f1_struct));
+      s = (struct f1_struct*)malloc(sizeof(struct f1_struct));
       s->num = 0;
-      strncpy(s->kmer, kmer, KMERLENGTHCONST);
-      HASH_ADD_STR(kmers_f1, kmer, s);  
+      strncpy(s->kmer, kmer, 10);
+      //s->name = name;
+      HASH_ADD_STR(kmers_f1, kmer, s);  /* id: name of key field */
     }
     s->num++;
     strcpy(s->kmer, kmer);
@@ -52,30 +73,32 @@ void print_f1() {
 
 void delete_free_f1() {
   struct f1_struct *s, *tmp;
+
   HASH_ITER(hh, kmers_f1, s, tmp) {
-    HASH_DEL(kmers_f1, s);  
-    free(s);               
+    HASH_DEL(kmers_f1, s);  /* delete it (users advances to next) */
+    free(s);                /* free it */
   }
 }
 
 //-------------------------------------------------------------------
 
 struct f2_struct {
-    int num;                 
+    int num;                    /* key */
     char kmer[KMERLENGTHCONST];
-    UT_hash_handle hh;       
+    UT_hash_handle hh;         /* makes this structure hashable */
 };
 
 struct f2_struct *kmers_f2 = NULL;
 
 void add_f2(char *kmer) {
     struct f2_struct *s;
-    HASH_FIND_STR(kmers_f2, kmer, s);  
+    HASH_FIND_STR(kmers_f2, kmer, s);  /* id already in the hash? */
     if (s == NULL) {
-      s = (struct f2_struct*)calloc(1, sizeof(struct f2_struct));
+      s = (struct f2_struct*)malloc(sizeof(struct f2_struct));
       s->num = 0;
-      strncpy(s->kmer, kmer, KMERLENGTHCONST);
-      HASH_ADD_STR(kmers_f2, kmer, s);  
+      strncpy(s->kmer, kmer, 10);
+      //s->name = name;
+      HASH_ADD_STR(kmers_f2, kmer, s);  /* id: name of key field */
     }
     s->num++;
     strcpy(s->kmer, kmer);
@@ -91,30 +114,32 @@ void print_f2() {
 
 void delete_free_f2() {
   struct f2_struct *s, *tmp;
+
   HASH_ITER(hh, kmers_f2, s, tmp) {
-    HASH_DEL(kmers_f2, s);
-    free(s);               
+    HASH_DEL(kmers_f2, s);  /* delete it (users advances to next) */
+    free(s);                /* free it */
   }
 }
 
 //-------------------------------------------------------------------
 
 struct rc2_struct {
-    int num;                   
+    int num;                    /* key */
     char kmer[KMERLENGTHCONST];
-    UT_hash_handle hh;
+    UT_hash_handle hh;         /* makes this structure hashable */
 };
 
 struct rc2_struct *kmers_rc2 = NULL;
 
 void add_rc2(char *kmer) {
     struct rc2_struct *s;
-    HASH_FIND_STR(kmers_rc2, kmer, s);  
+    HASH_FIND_STR(kmers_rc2, kmer, s);  /* id already in the hash? */
     if (s == NULL) {
-      s = (struct rc2_struct*)calloc(1, sizeof(struct rc2_struct));
+      s = (struct rc2_struct*)malloc(sizeof(struct rc2_struct));
       s->num = 0;
-      strncpy(s->kmer, kmer, KMERLENGTHCONST);
-      HASH_ADD_STR(kmers_rc2, kmer, s);  
+      strncpy(s->kmer, kmer, 10);
+      //s->name = name;
+      HASH_ADD_STR(kmers_rc2, kmer, s);  /* id: name of key field */
     }
     s->num++;
     strcpy(s->kmer, kmer);
@@ -130,119 +155,107 @@ void print_rc2() {
 
 void delete_free_rc2() {
   struct rc2_struct *s, *tmp;
+
   HASH_ITER(hh, kmers_rc2, s, tmp) {
-    HASH_DEL(kmers_rc2, s);
-    free(s);
+    HASH_DEL(kmers_rc2, s);  /* delete it (users advances to next) */
+    free(s);                /* free it */
   }
 }
 
 //-------------------------------------------------------------------
 
-double f1_query_f2_rc2(const int KMERSIZE) {
-    int ANI = 0;
-    int worstANI = 0;
+double ani_f1_f2_rc2_lev_print(int kmerLengthParam) {
+    double kmerLength = (double) kmerLengthParam;
+    double kmerCount = 0;
+    double totalANI = 0;
+    double finalANI = 0;
+    double currentANI = kmerLength;
     struct f1_struct *f1;
     struct f2_struct *f2;
     struct rc2_struct *rc2;
     rc2 = kmers_rc2;
+    printf("F1: count\n");
+    printf("F2: count\n");
+    printf("RC2: count\n\n");
     for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
-      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
-      if(f2 == NULL) {
-        ANI = ANI + KMERSIZE*(f1->num);
-        worstANI = worstANI + KMERSIZE*(f1->num);
-      } else {
-        worstANI = worstANI + KMERSIZE*(f1->num);
-      }
-      HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
-      if(rc2 == NULL) {
-        ANI = ANI + KMERSIZE*(f1->num);
-        worstANI = worstANI + KMERSIZE*(f1->num);
-      } else {
-        worstANI = worstANI + KMERSIZE*(f1->num);
-      }
+     for(f2=kmers_f2; f2 != NULL; f2=(struct f2_struct*)(f2->hh.next)) { 
+       printf("%s : %d\n", f1->kmer, f1->num);
+       printf("%s : %d\n", f2->kmer, f2->num);
+       printf("%s : %d\n", rc2->kmer, rc2->num);//printf("\n");
+       if(editDistance(f1->kmer, f2->kmer, kmerLength) < editDistance(f1->kmer, rc2->kmer, kmerLength)) {
+        if(editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1) < currentANI) {
+          currentANI = editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1);
+        }
+        printf("f2 kmer is less, ANI: %d\n", editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1));
+       } else {
+        printf("rc2 kmer is equal or less, ANI: %d\n", editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1));
+        if(editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1) < currentANI) {
+          currentANI = editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1);
+        }
+       }
+       if((struct rc2_struct*)(rc2->hh.next) != NULL) {
+         rc2 = (struct rc2_struct*)(rc2->hh.next);
+       }
+    } 
+    while((struct rc2_struct*)(rc2->hh.prev) != NULL) {
+      rc2 = (struct rc2_struct*)(rc2->hh.prev);
+    }
+    kmerCount++;
+    printf("kmerCount: %f\n", kmerCount);
+    printf("currentANI: %f\n", currentANI);
+    totalANI = currentANI + totalANI;
+    currentANI = kmerLength;
+    printf("\n");printf("\n");
   }
+  printf("worst case ANI: %f\n", kmerCount*kmerLength);
+  printf("ANI1: %f\n", 100 - (totalANI/(kmerCount*kmerLength)*100));
+  finalANI = 100 - (totalANI/(kmerCount*kmerLength)*100);
   delete_free_f1();
   delete_free_f2();
   delete_free_rc2();
-  return 100 - ((double) ANI/ (double) worstANI)*100;
+  return finalANI;
 }
 
-double f1_query_f2_rc2_single(const int KMERSIZE) {
-    int ANI = 0;
-    int worstANI = 0;
-    struct f1_struct *f1;
-    struct f2_struct *f2;
-    struct rc2_struct *rc2;
-    rc2 = kmers_rc2;
-    for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
-      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
-      if(f2 == NULL) {
-        ANI = ANI + KMERSIZE*(f1->num);
-        worstANI = worstANI + KMERSIZE;
-      } else {
-        worstANI = worstANI + KMERSIZE;
-      }
-      HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
-      if(rc2 == NULL) {
-        ANI = ANI + KMERSIZE;
-        worstANI = worstANI + KMERSIZE;
-      } else {
-        worstANI = worstANI + KMERSIZE;
-      }
-  }
-  delete_free_f1();
-  delete_free_f2();
-  delete_free_rc2();
-  return 100 - ((double) ANI/ (double) worstANI)*100;
-}
+//-------------------------------------------------------------------
 
-double f1_query_f2_rc2_print(const int KMERSIZE) {
-    int ANI = 0;
-    int worstANI = 0;
+//ACGT input ok
+double ani_f1_f2_rc2_lev(int kmerLengthParam) {
+    double kmerLength = (double) kmerLengthParam;
+    double kmerCount = 0;
+    double totalANI = 0;
+    double finalANI = 0;
+    double currentANI = kmerLength;
     struct f1_struct *f1;
     struct f2_struct *f2;
     struct rc2_struct *rc2;
     rc2 = kmers_rc2;
     for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
-      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
-      if(f2 == NULL) {
-        printf("%s not in f2\n", f1->kmer);
-        ANI = ANI + KMERSIZE*(f1->num);
-        worstANI = worstANI + KMERSIZE*(f1->num);
-        printf("ANI: %d\n", ANI);
-        printf("worstANI: %d\n", worstANI);
-        printf("\n");  
-      } else {
-        printf("%s in f2\n", f1->kmer);
-        worstANI = worstANI + KMERSIZE*(f1->num);
-        printf("ANI: %d\n", ANI);
-        printf("worstANI: %d\n", worstANI);
-        printf("\n");  
-      }
-      HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
-      if(rc2 == NULL) {
-        printf("%s not in rc2\n", f1->kmer);
-        ANI = ANI + KMERSIZE*(f1->num);
-        worstANI = worstANI + KMERSIZE*(f1->num);
-        printf("ANI: %d\n", ANI);
-        printf("worstANI: %d\n", worstANI);
-        printf("\n"); 
-      } else {
-        printf("%s in f2\n", f1->kmer);
-        worstANI = worstANI + KMERSIZE*(f1->num);
-        printf("ANI: %d\n", ANI);
-        printf("worstANI: %d\n", worstANI);
-        printf("\n"); 
-      }
+     for(f2=kmers_f2; f2 != NULL; f2=(struct f2_struct*)(f2->hh.next)) { 
+       if(editDistance(f1->kmer, f2->kmer, kmerLength) < editDistance(f1->kmer, rc2->kmer, kmerLength)) {
+        if(editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1) < currentANI) {
+          currentANI = editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1);
+        }
+       } else {
+        if(editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1) < currentANI) {
+          currentANI = editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1);
+        }
+       }
+       if((struct rc2_struct*)(rc2->hh.next) != NULL) {
+         rc2 = (struct rc2_struct*)(rc2->hh.next);
+       }
+    } 
+    while((struct rc2_struct*)(rc2->hh.prev) != NULL) {
+      rc2 = (struct rc2_struct*)(rc2->hh.prev);
+    }
+    kmerCount++;
+    totalANI = currentANI + totalANI;
+    currentANI = kmerLength;
   }
-  printf("ANI: %d\n", ANI);
-  printf("worstANI: %d\n", worstANI);
-  printf("Actual ANI: %f\n", 100 - ((double) ANI/ (double) worstANI)*100);
-  //printf("FinalANI: %f\n", 100 - (((double) ANI / ((double) worstANI * (double) ANI))*100));
+  finalANI = 100 - (totalANI/(kmerCount*kmerLength)*100);
   delete_free_f1();
   delete_free_f2();
   delete_free_rc2();
-  return 100 - ((double) ANI/ (double) worstANI)*100;
+  return finalANI;
 }
 
 //-------------------------------------------------------------------
@@ -375,8 +388,8 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                             add_f2(kmerArr2);
                             add_rc2(kmerArr3);
                         }
-                        //f1_query_f2_rc2(KMERSIZE);
-                        //f1_query_f2_rc2_print(KMERSIZE);
+                        //ani_f1_f2_rc2_lev_print();
+                        //ani_f1_f2_rc2_lev();
                     int g1_str = '/';
                     int s1_str = '_';
                     int f1_str = '.';
@@ -435,16 +448,16 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                         printf("%c", *ptr_s2);
                         ptr_s2++;
                     }
-                    printf("','%d','%f'),", KMERSIZE, f1_query_f2_rc2(KMERSIZE));
+                    printf("','%d','%f'),", KMERSIZE, ani_f1_f2_rc2_lev(KMERSIZE));
                     printf("\n");
-    		free(fna1Characters[0]);
+		    free(fna1Characters[0]);
 		    free(fna1Characters);
-    		free(fna2Characters[0]);
-            free(fna2Characters);
-            free(kmers_f1);
-            free(kmers_f2);
-            free(kmers_rc2);
-		      }
+    		    free(fna2Characters[0]);
+            	    free(fna2Characters);
+            	    free(kmers_f1);
+            	    free(kmers_f2);
+            	    free(kmers_rc2);
+		}
             }
         } 
     }
