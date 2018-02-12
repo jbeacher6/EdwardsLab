@@ -19,26 +19,6 @@
 #define minimumFnaFileStringLength 4
 #define nameLength 300
 
-
-//------------------------------------------------------------------
-
-int editDistance(const char* S, const char* T, int kmerLength) {
-    int matrix[kmerLength + 1][kmerLength + 1];
-    for (int i = 0; i <= kmerLength; i++) {
-        matrix[i][0] = i;
-        matrix[0][i] = i;
-    }
-    for (int j = 1; j <= kmerLength; j++) {
-        for (int k = 1; k <= kmerLength; k++) {
-            if (S[j-1] == T[k-1]) 
-                matrix[j][k] = matrix[j-1][k-1];
-            else 
-                matrix[j][k] = (matrix[j][k-1] + 1) > (matrix[j-1][k] + 1) ? ((matrix[j-1][k-1] + 1) > (matrix[j-1][k] + 1) ? (matrix[j-1][k] + 1) : (matrix[j-1][k-1] + 1)) : ((matrix[j-1][k-1] + 1) > (matrix[j][k-1] + 1) ? (matrix[j][k-1] + 1) : (matrix[j-1][k-1] + 1));
-        }
-    }
-    return matrix[kmerLength][kmerLength];
-}
-
 //-------------------------------------------------------------------
 
 struct f1_struct {
@@ -164,52 +144,69 @@ void delete_free_rc2() {
 
 //-------------------------------------------------------------------
 
-double ani_f1_f2_rc2_lev_print(int kmerLengthParam) {
-    double kmerLength = (double) kmerLengthParam;
+double ani_f1_f2_rc2_lev2_print(int kmerSizeParam) {
+    double kmerLength = (double) kmerSizeParam;
     double kmerCount = 0;
     double totalANI = 0;
     double finalANI = 0;
     double currentANI = kmerLength;
+    double worstCaseANI = 0;
     struct f1_struct *f1;
     struct f2_struct *f2;
     struct rc2_struct *rc2;
     rc2 = kmers_rc2;
-    printf("F1: count\n");
+    printf("\n\nF1: count\n");
     printf("F2: count\n");
     printf("RC2: count\n\n");
+    int found = 0;
+
     for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
-     for(f2=kmers_f2; f2 != NULL; f2=(struct f2_struct*)(f2->hh.next)) { 
-       printf("%s : %d\n", f1->kmer, f1->num);
-       printf("%s : %d\n", f2->kmer, f2->num);
-       printf("%s : %d\n", rc2->kmer, rc2->num);//printf("\n");
-       if(editDistance(f1->kmer, f2->kmer, kmerLength) < editDistance(f1->kmer, rc2->kmer, kmerLength)) {
-        if(editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1) < currentANI) {
-          currentANI = editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1);
+      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
+      if(f2 == NULL) {//f2 not available
+        HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
+        if(rc2 == NULL) {//rc2 not available
+        } else {//rc2 available
+          found = 1;
+          currentANI = kmerLength*(abs(f1->num - rc2->num));
+          totalANI = currentANI + totalANI;
+          worstCaseANI = f1->num*kmerLength + worstCaseANI;
+          printf("rc2 found\n");
+          printf("f1: %f\n", currentANI);
+          printf("%s : %d\n", f1->kmer, f1->num);
+          //printf("%s : %d\n", f2->kmer, f2->num);
+          printf("%s : %d\n", rc2->kmer, rc2->num);//printf("\n");
         }
-        printf("f2 kmer is less, ANI: %d\n", editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1));
-       } else {
-        printf("rc2 kmer is equal or less, ANI: %d\n", editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1));
-        if(editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1) < currentANI) {
-          currentANI = editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1);
-        }
-       }
-       if((struct rc2_struct*)(rc2->hh.next) != NULL) {
-         rc2 = (struct rc2_struct*)(rc2->hh.next);
-       }
-    } 
-    while((struct rc2_struct*)(rc2->hh.prev) != NULL) {
-      rc2 = (struct rc2_struct*)(rc2->hh.prev);
-    }
+      } else {//f2 available
+        found = 1;
+        currentANI = kmerLength*(abs(f1->num - f2->num));
+        totalANI = currentANI + totalANI;
+        worstCaseANI = f1->num*kmerLength + worstCaseANI;
+
+        printf("f2 found\n");
+        printf("currentANI: %f\n", currentANI);
+        printf("%s : %d\n", f1->kmer, f1->num);
+        printf("%s : %d\n", f2->kmer, f2->num);
+        //printf("%s : %d\n", rc2->kmer, rc2->num);//printf("\n");
+      }
     kmerCount++;
+    found = 0;
     printf("kmerCount: %f\n", kmerCount);
     printf("currentANI: %f\n", currentANI);
-    totalANI = currentANI + totalANI;
+    printf("totalANI: %f\n", totalANI);
     currentANI = kmerLength;
-    printf("\n");printf("\n");
+    printf("\n");
+    printf("\n");
   }
-  printf("worst case ANI: %f\n", kmerCount*kmerLength);
-  printf("ANI1: %f\n", 100 - (totalANI/(kmerCount*kmerLength)*100));
-  finalANI = 100 - (totalANI/(kmerCount*kmerLength)*100);
+
+
+  printf("totalANI: %f\n", totalANI);
+  printf("worstCaseANI: %f\n", worstCaseANI);
+  printf("%f\n", totalANI);
+  printf("%f\n", worstCaseANI);
+
+
+  printf("ANI1: %f\n", 100 - (totalANI/(worstCaseANI)*100));
+  finalANI = 100 - (totalANI/(worstCaseANI)*100);
   delete_free_f1();
   delete_free_f2();
   delete_free_rc2();
@@ -218,40 +215,35 @@ double ani_f1_f2_rc2_lev_print(int kmerLengthParam) {
 
 //-------------------------------------------------------------------
 
-//ACGT input ok
-double ani_f1_f2_rc2_lev(int kmerLengthParam) {
-    double kmerLength = (double) kmerLengthParam;
+double ani_f1_f2_rc2_accurate(int kmerSizeParam) {
+    double kmerLength = (double) kmerSizeParam;
     double kmerCount = 0;
     double totalANI = 0;
     double finalANI = 0;
     double currentANI = kmerLength;
+    double worstCaseANI = 0;
     struct f1_struct *f1;
     struct f2_struct *f2;
     struct rc2_struct *rc2;
     rc2 = kmers_rc2;
     for(f1=kmers_f1; f1 != NULL; f1=(struct f1_struct*)(f1->hh.next)) {
-     for(f2=kmers_f2; f2 != NULL; f2=(struct f2_struct*)(f2->hh.next)) { 
-       if(editDistance(f1->kmer, f2->kmer, kmerLength) < editDistance(f1->kmer, rc2->kmer, kmerLength)) {
-        if(editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1) < currentANI) {
-          currentANI = editDistance(f1->kmer, f2->kmer, kmerLength)*(abs(f1->num - f2->num)+1);
+      HASH_FIND_STR(kmers_f2, f1->kmer, f2);
+      if(f2 == NULL) {//f2 not available
+        HASH_FIND_STR(kmers_rc2, f1->kmer, rc2);
+        if(rc2 == NULL) {//rc2 not available
+        } else {//rc2 available
+          currentANI = kmerLength*(abs(f1->num - rc2->num));
+          totalANI = currentANI + totalANI;
+          worstCaseANI = f1->num*kmerLength + worstCaseANI;
         }
-       } else {
-        if(editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1) < currentANI) {
-          currentANI = editDistance(f1->kmer, rc2->kmer, kmerLength)*(abs(f1->num - rc2->num)+1);
-        }
-       }
-       if((struct rc2_struct*)(rc2->hh.next) != NULL) {
-         rc2 = (struct rc2_struct*)(rc2->hh.next);
-       }
-    } 
-    while((struct rc2_struct*)(rc2->hh.prev) != NULL) {
-      rc2 = (struct rc2_struct*)(rc2->hh.prev);
-    }
+      } else {//f2 available
+        currentANI = kmerLength*(abs(f1->num - f2->num));
+        totalANI = currentANI + totalANI;
+        worstCaseANI = f1->num*kmerLength + worstCaseANI;
+      }
     kmerCount++;
-    totalANI = currentANI + totalANI;
-    currentANI = kmerLength;
   }
-  finalANI = 100 - (totalANI/(kmerCount*kmerLength)*100);
+  finalANI = 100 - (totalANI/(worstCaseANI)*100);
   delete_free_f1();
   delete_free_f2();
   delete_free_rc2();
@@ -388,8 +380,11 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                             add_f2(kmerArr2);
                             add_rc2(kmerArr3);
                         }
-                        //ani_f1_f2_rc2_lev_print();
-                        //ani_f1_f2_rc2_lev();
+                        //print_f1();
+                        //ani_f1_f2_rc2_lev_print(KMERSIZE);
+                        //ani_f1_f2_rc2_lev(KMERSIZE);
+                        //ani_f1_f2_rc2_binary(KMERSIZE);
+                        //ani_f1_f2_rc2_binary_print(KMERSIZE);
                     int g1_str = '/';
                     int s1_str = '_';
                     int f1_str = '.';
@@ -448,16 +443,16 @@ void calculateANI(const char fnaFilesDirectory[], const int KMERSIZE, const int 
                         printf("%c", *ptr_s2);
                         ptr_s2++;
                     }
-                    printf("','%d','%f'),", KMERSIZE, ani_f1_f2_rc2_lev(KMERSIZE));
+                    printf("','%d','%f'),", KMERSIZE, ani_f1_f2_rc2_accurate(KMERSIZE));
                     printf("\n");
-		    free(fna1Characters[0]);
-		    free(fna1Characters);
-    		    free(fna2Characters[0]);
-            	    free(fna2Characters);
-            	    free(kmers_f1);
-            	    free(kmers_f2);
-            	    free(kmers_rc2);
-		}
+		                free(fna1Characters[0]);
+		                free(fna1Characters);
+    		            free(fna2Characters[0]);
+            	      free(fna2Characters);
+            	      free(kmers_f1);
+            	      free(kmers_f2);
+            	      free(kmers_rc2);
+		            }
             }
         } 
     }

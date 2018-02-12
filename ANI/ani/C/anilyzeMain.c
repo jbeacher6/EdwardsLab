@@ -28,8 +28,14 @@ int main(int argc, char *argv[]) {//the main that will get the arguments detaile
         const int fileSimilarityThresholdConstantParam = 0;
         printf("INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, kmerSize, Percentage) \nVALUES \n");//SQL insert statement for futher analysis
         //calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
-        for(int i = kmerSizeMinParam; i <= kmerSizeMaxParam; i++) {
-            calculateANI(argv[1], i, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
+        
+        if(kmerSizeMaxParam == 0) {
+            calculateANI(argv[1], kmerSizeMinParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
+
+        } else {
+            for(int i = kmerSizeMinParam; i <= kmerSizeMaxParam; i++) {
+                calculateANI(argv[1], i, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
+            }
         }
     }
     else {//the number of arguments was not correct and print a help section for valid input
