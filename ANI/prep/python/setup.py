@@ -19,28 +19,30 @@ def runSetupA(inputDirectoryParam):
   deleteLineInfo(inputDirectoryParam)
   modifyFileNames(inputDirectoryParam)
   createReverseComplimentAndAppendToForward(inputDirectoryParam)
-  convertToBinary(inputDirectoryParam)
+  #convertToBinary(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
 
 def runSetupE(inputDirectoryParam):
-  deleteLineInfo(inputDirectoryParam)
-  createReverseComplimentAndAppendToForward(inputDirectoryParam)
-  convertToBinary(inputDirectoryParam)
+  #decompress(inputDirectoryParam)
+  #deleteFirstLineAndRename(inputDirectoryParam)
+  #deleteLineInfo(inputDirectoryParam)
+  #createReverseComplimentAndAppendToForward(inputDirectoryParam)
+  #convertToBinary(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
 
 def runSetupF(inputDirectoryParam):
   splitFastaForComplete(inputDirectoryParam)
   modifyFileNames(inputDirectoryParam)
   createReverseComplimentAndAppendToForward(inputDirectoryParam)
-  convertToBinary(inputDirectoryParam)
+  #convertToBinary(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
 
 def main(argv):
-  inputFilesDefaultPathString = os.getcwd() + "/inputFiles/"
+  inputFilesDefaultPathString = os.getcwd() + "/fnaFiles/"
   parser = argparse.ArgumentParser()
-  parser.add_argument('-e', '--executeWithDefaultInputDirectory', help='Execute with .fna files in ./anilyze/inputFiles', action='store_true')
+  parser.add_argument('-e', '--executeWithDefaultInputDirectory', help='Execute with .fna files in ./anilyze/fnaFiles', action='store_true')
   parser.add_argument('-a', '--autoDownloadNCBIComplete', help='Automatically download files and execute with NCBI complete bacteria DNA files', action='store_true')
-  parser.add_argument('-f', '--executeWithDefaultInputDirectoryFasta', help='Execute with .fasta files in ./anilyze/inputFiles', action='store_true')
+  parser.add_argument('-f', '--executeWithDefaultInputDirectoryFasta', help='Execute with .fasta files in ./anilyze/fastaFiles', action='store_true')
   #parser.add_argument('-a', '--autoDownloadNCBIComplete', help='help')
   args = parser.parse_args() 
   if(args.executeWithDefaultInputDirectory):

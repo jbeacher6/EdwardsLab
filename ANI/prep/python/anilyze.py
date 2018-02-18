@@ -217,6 +217,16 @@ def deleteLineInfo(inputDirectoryParam):
         currentFile.close()#close the file for the next file or completion
   print("Finished deletion of > lines from files located in " + str(inputDirectoryParam) + "complete")#print progress of the program
 
+def removeNewLines():
+  ext = ".fna"
+  listFiles = []
+  for root, dir, files in os.walk(os.getcwd(), topdown=True):
+    for currentFile in files:
+      if currentFile.endswith(ext):
+        listFiles.append(str(currentFile))
+  for i in range(len(listFiles)):
+    os.system("tr '\n' ' ' < " + listFiles[i])
+
 #Step 7:
 #This will modify the line length to 70. Anilyze in C needs a constant line length with new lines
 #Paramter inputDirectoryParam: the directory of the files that contain the files to modify the line length to seventy
@@ -224,14 +234,15 @@ def deleteLineInfo(inputDirectoryParam):
 def modifyLineLengthToSeventy(inputDirectoryParam, outputDirectoryParam):
   ext = ".fna"
   print("Modifying the line lengths of the files located in " + inputDirectoryParam + " to 70 >" + outputDirectoryParam + "correctlyFormatted/")
-  os.system("mkdir " + outputDirectoryParam + "/correctlyFormatted")#
   if not os.path.exists(outputDirectoryParam):
     os.system("mkdir " + str(outputDirectoryParam))
+  os.system("mkdir " + outputDirectoryParam + "incorrectlyFormatted")#
+  os.system("mkdir " + outputDirectoryParam + "correctlyFormatted")#
   for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#
     for f in files:#iterate through all of the files in the tree/output_directory/complete/mod
       if f.endswith(ext):#check if the file ends with .fna
-        #print("grep -oE '.{1,70}' " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + "/Seventy" + str(f))
-        os.system("grep -oE '.{1,70}' " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + "correctlyFormatted/" + str(f))#reformat the lines to lengths of 70 characters per line and cat to /tree/output/complete/mod2/
+        os.system("tr -d '\n' < " + inputDirectoryParam + str(f) + " > " + outputDirectoryParam + "incorrectlyFormatted/" + str(f)) 
+        os.system("grep -oE '.{1,70}' " + outputDirectoryParam + "incorrectlyFormatted/" + str(f) + " > " + outputDirectoryParam + "correctlyFormatted/" + str(f))#reformat the lines to lengths of 70 characters per line and cat to /tree/output/complete/mod2/
   print("Completed modifying the line lengths of the files located in " + inputDirectoryParam + " to 70")
 
 #Step 8:
