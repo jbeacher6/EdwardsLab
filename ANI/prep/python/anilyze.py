@@ -21,9 +21,9 @@ def downloadFiles(inputDirectoryParam, testParam):
   fnaFilesDirectoryName = "fnaFiles"
   fnaFilesDirectoryPath = str(currentDirectoryPath) + "/" + str(fnaFilesDirectoryName) #name of the directory that will contain all of the .fna.gz files from refseq
   prepDirectoryPath = str(currentDirectoryPath) + "/" + str(prepDirectoryName) + "/"
-  ftpDirPathsPathAndFilename = str(prepDirectoryPath) + "ftpDirPaths"#name of the file that will contain a list of all the file paths used to download using ftp
-  ftpDirPathsModPathAndFilename = str(prepDirectoryPath) + "ftpDirPathsMod"#name of the modded file that will contain a list of all the modded directory paths used to download using ftplib
-  ftpFilePathsPathAndFilename = str(prepDirectoryPath) + "ftpFilePaths"#name of the file that will contain a list of all the file paths used to download using ftplib
+  ftpDirPathsPathAndFilename = str(prepDirectoryPath) + "ftpdirpaths"#name of the file that will contain a list of all the file paths used to download using ftp
+  ftpDirPathsModPathAndFilename = str(prepDirectoryPath) + "ftpdirpathsmod"#name of the modded file that will contain a list of all the modded directory paths used to download using ftplib
+  ftpFilePathsPathAndFilename = str(prepDirectoryPath) + "ftpfilepaths"#name of the file that will contain a list of all the file paths used to download using ftplib
   mkdirCommandFnaFilesDirectory = "mkdir " + str(fnaFilesDirectoryName)#create directory of the .fna.gz files download location
   mkdirCommandPrepFilesDirectory = "mkdir " + str(prepDirectoryName) #create directory of the ftpDirPaths, ftpDirPathsMod, ftpFilePaths and assembly_summary.txt files
   numDirs = 0#number of directories contained in the ftpDirPathsMod file
