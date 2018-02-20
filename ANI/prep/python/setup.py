@@ -19,22 +19,19 @@ def runSetupA(inputDirectoryParam):
   deleteLineInfo(inputDirectoryParam)
   modifyFileNames(inputDirectoryParam)
   createReverseComplimentAndAppendToForward(inputDirectoryParam)
-  #convertToBinary(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
 
 def runSetupE(inputDirectoryParam):
-  #decompress(inputDirectoryParam)
-  #deleteFirstLineAndRename(inputDirectoryParam)
-  #deleteLineInfo(inputDirectoryParam)
-  #createReverseComplimentAndAppendToForward(inputDirectoryParam)
-  #convertToBinary(inputDirectoryParam)
+  decompress(inputDirectoryParam)
+  deleteFirstLineAndRename(inputDirectoryParam)
+  deleteLineInfo(inputDirectoryParam)
+  createReverseComplimentAndAppendToForward(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
 
 def runSetupF(inputDirectoryParam):
   splitFastaForComplete(inputDirectoryParam)
   modifyFileNames(inputDirectoryParam)
   createReverseComplimentAndAppendToForward(inputDirectoryParam)
-  #convertToBinary(inputDirectoryParam)
   modifyLineLengthToSeventy(inputDirectoryParam, inputDirectoryParam)
 
 def main(argv):
