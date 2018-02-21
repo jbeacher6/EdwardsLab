@@ -284,6 +284,25 @@ def splitFasta(inputFileParam):
   file.close()#close the current file
 #TODO: Check end of inputArg for /
 
+#Removes Species_sp, Species_bacterium, Species_endosymbiont
+def deleteSpBacteriumEndosymbiont(inputDirectoryParam):
+  print("Removing files with sp, bacterium and endosymbiont")#print the progress of the program
+  ext = ".fna"#extension of file 
+  for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#iterate through the input directory
+    for f in files:#check all the files
+      if f.endswith(ext):#if the file ends with .fna
+        list2 = f.split("_")
+        list3 = list2[1].split(".")
+        list4 = list3[0].strip()
+        if(list4 == "sp"):
+           os.system("rm " + str(inputDirectoryParam) + "/" + str(f))
+        elif(list4 == "bacterium"):
+           os.system("rm " + str(inputDirectoryParam) + "/" + str(f))
+        elif(list4 == "endosymbiont"):
+           os.system("rm " + str(inputDirectoryParam) + "/" + str(f))
+        else:
+           pass
+
 #Step Other: This is used if user downloads fasta files from NCBI. This was made to download all 16S and split into individual files
 #Parameter inputFileParam: The fasta file to split
 #Parameter outputFileParam: The directory to output the .fna file to output to 

@@ -7,6 +7,7 @@ from anilyze import convertToBinary
 from anilyze import modifyLineLengthToSeventy
 from anilyze import splitFastaForComplete
 from anilyze import modifyFileNames
+from anilyze import deleteSpBacteriumEndosymbiont
 import sys
 import getopt
 import os
@@ -16,6 +17,7 @@ import argparse
 def runSetupA(inputDirectoryParam):
   decompress(inputDirectoryParam)
   deleteFirstLineAndRename(inputDirectoryParam)
+  deleteSpBacteriumEndosymbiont(inputDirectoryParam)
   deleteLineInfo(inputDirectoryParam)
   modifyFileNames(inputDirectoryParam)
   createReverseComplimentAndAppendToForward(inputDirectoryParam)
