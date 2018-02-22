@@ -15,7 +15,7 @@ Argument 2: <kmerSizeMinInteger> : This is the kmer integer size to input into t
 Max Size: 50
 Argument 3: <kmerSizeMinInteger> : This is the kmer integer size to input into the program. For example, a k-mer isze of ten would be 10.
 Min Size: 2
-This program will iterate kmersize from Argument2 to Argument3 unless Argument3 is zero
+This program will iterate kmersize from Argument2 to Argument3
 
 Optioanl Argument: <filePercentSimilarityThresholdConstantInteger> : This is the percent similarity threshold to limit file comparisons. 
 If one file has one million bytes but the other has two bytes, limiting this comparison can be done by inputting a valid integer greater 
@@ -26,22 +26,10 @@ int main(int argc, char *argv[]) {//the main that will get the arguments detaile
         const int kmerSizeMinParam = atoi(argv[2]);//The program will multiply the kmer size by two to have a valid binary kmer size
         const int kmerSizeMaxParam = atoi(argv[3]);//Get the percent size threshold
         const int fileSimilarityThresholdConstantParam = 0;
-        FILE *f = fopen("ani.txt", "a");
-        if (f == NULL) {
-            printf("Error opening ani.txt\n");
-            exit(1);
-        }
-        fprintf(f, "CREATE TABLE anilyze (Genus1, Species1, Genus2, Species2, kmerSize, Percentage real);\n");
-        fprintf(f, "INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, kmerSize, Percentage) \nVALUES \n");//SQL insert statement for futher analysis
+        printf("INSERT INTO anilyzeTable (Genus1, Species1, Genus2, Species2, kmerSize, Percentage) \nVALUES \n");//SQL insert statement for futher analysis
         //calculateANI(argv[1], kmerSizeConstantParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));//call calculateANILib with arguments
-        fclose(f);
-        if(kmerSizeMaxParam == 0) {
-            calculateANI(argv[1], kmerSizeMinParam, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
-
-        } else {
-            for(int i = kmerSizeMinParam; i <= kmerSizeMaxParam; i++) {
-                calculateANI(argv[1], i, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
-            }
+        for(int i = kmerSizeMinParam; i <= kmerSizeMaxParam; i++) {
+            calculateANI(argv[1], i, fileSimilarityThresholdConstantParam, numberOfFiles(argv[1]));
         }
     }
     else {//the number of arguments was not correct and print a help section for valid input
