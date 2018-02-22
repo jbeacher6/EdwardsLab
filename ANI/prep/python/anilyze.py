@@ -286,6 +286,12 @@ def splitFasta(inputFileParam):
 
 #Removes Species_sp, Species_bacterium, Species_endosymbiont
 def deleteSpBacteriumEndosymbiont(inputDirectoryParam):
+  if(os.path.isfile(str(inputDirectoryParam) + "/complete_chromosome.fna")):
+     os.system("rm " + str(inputDirectoryParam) + "/complete_chromosome.fna")
+  if(os.path.isfile(str(inputDirectoryParam) + "/gamma_proteobacterium.fna")):
+     os.system("rm " + str(inputDirectoryParam) + "/gamma_proteobacterium.fna")
+  if(os.path.isfile(str(inputDirectoryParam) + "/secondary_endosymbiont.fna")):
+     os.system("rm " + str(inputDirectoryParam) + "/secondary_endosymbiont.fna")
   print("Removing files with sp, bacterium and endosymbiont")#print the progress of the program
   ext = ".fna"#extension of file 
   for root, dir, files in os.walk(inputDirectoryParam, topdown=True):#iterate through the input directory
